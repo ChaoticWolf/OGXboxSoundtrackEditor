@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -27,6 +29,7 @@ namespace OGXboxSoundtrackEditor
         public UserSettings()
         {
             InitializeComponent();
+
             outputFolder = Properties.Settings.Default.outputFolder;
             ftpIpAddress = Properties.Settings.Default.ftpIpAddress;
             ftpUsername = Properties.Settings.Default.ftpUsername;
@@ -66,36 +69,47 @@ namespace OGXboxSoundtrackEditor
 
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {
-            Properties.Settings.Default.outputFolder = outputFolder;
+            //Verify output folder
+            if (!Directory.Exists(txtOutputDirectory.Text)) {
+                System.Windows.MessageBox.Show("Invalid output directory.", "Output Directory Invalid", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            
+            //Verify IP
+            if (!Regex.IsMatch(txtIpAddress.Text.Trim(), "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"))
+            {
+                System.Windows.MessageBox.Show("Invalid IP.", "IP Invalid", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            Properties.Settings.Default.outputFolder = txtOutputDirectory.Text;
             Properties.Settings.Default.ftpIpAddress = txtIpAddress.Text.Trim();
-            Properties.Settings.Default.ftpUsername = txtUsername.Text.Trim();
-            Properties.Settings.Default.ftpPassword = txtPassword.Text.Trim();
+            Properties.Settings.Default.ftpUsername = txtUsername.Text;
+            Properties.Settings.Default.ftpPassword = txtPassword.Text;
 
             if (cboBitrate.SelectedIndex == 0)
             {
                 Properties.Settings.Default.bitrate = 96000;
             }
-            if (cboBitrate.SelectedIndex == 1)
+            else if (cboBitrate.SelectedIndex == 1)
             {
                 Properties.Settings.Default.bitrate = 128000;
             }
-            if (cboBitrate.SelectedIndex == 2)
+            else if (cboBitrate.SelectedIndex == 2)
             {
                 Properties.Settings.Default.bitrate = 192000;
             }
-            if (cboBitrate.SelectedIndex == 3)
+            else if (cboBitrate.SelectedIndex == 3)
             {
                 Properties.Settings.Default.bitrate = 256000;
             }
-            if (cboBitrate.SelectedIndex == 4)
+            else if (cboBitrate.SelectedIndex == 4)
             {
                 Properties.Settings.Default.bitrate = 320000;
             }
 
-            ftpIpAddress = txtIpAddress.Text.Trim();
-            ftpUsername = txtUsername.Text.Trim();
-            ftpPassword = txtPassword.Text.Trim();
             Properties.Settings.Default.Save();
+            
             DialogResult = true;
         }
 
@@ -104,8 +118,7 @@ namespace OGXboxSoundtrackEditor
             FolderBrowserDialog fDialog = new FolderBrowserDialog();
             if (fDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                outputFolder = fDialog.SelectedPath;
-                txtOutputDirectory.Text = outputFolder;
+                txtOutputDirectory.Text = fDialog.SelectedPath;
             }
         }
     }

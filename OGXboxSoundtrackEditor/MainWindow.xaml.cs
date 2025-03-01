@@ -76,46 +76,6 @@ namespace OGXboxSoundtrackEditor
             ftpUsername = Properties.Settings.Default.ftpUsername;
             ftpPassword = Properties.Settings.Default.ftpPassword;
             bitrate = Properties.Settings.Default.bitrate;
-
-            if (!Directory.Exists(outputFolder))
-            {
-                txtStatus.Text = "Output Folder is invalid.";
-                mnuOpenFromFTP.IsEnabled = false;
-                return;
-            }
-
-            if (ftpIpAddress.ToString() == "")
-            {
-                txtStatus.Text = "FTP Address is blank.";
-                mnuOpenFromFTP.IsEnabled = false;
-                return;
-            }
-            else
-            {
-                if (!IPAddress.TryParse(ftpIpAddress, out IPAddress parsedIP))
-                {
-                    txtStatus.Text = "FTP Address is invalid.";
-                    mnuOpenFromFTP.IsEnabled = false;
-                    return;
-                }
-            }
-
-            if (ftpUsername.ToString().Trim() == "")
-            {
-                txtStatus.Text = "FTP Username is blank.";
-                mnuOpenFromFTP.IsEnabled = false;
-                return;
-            }
-
-            if (ftpPassword.ToString().Trim() == "")
-            {
-                txtStatus.Text = "FTP Password is blank.";
-                mnuOpenFromFTP.IsEnabled = false;
-                return;
-            }
-
-            txtStatus.Text = "Settings are valid.";
-            mnuOpenFromFTP.IsEnabled = true;
         }
 
         private void UpdateStatus(string s)
@@ -346,8 +306,11 @@ namespace OGXboxSoundtrackEditor
             UserSettings wndSettings = new UserSettings();
             wndSettings.Top = this.Top + 100;
             wndSettings.Left = this.Left + 100;
-            wndSettings.ShowDialog();
-            LoadSettings();
+            if (wndSettings.ShowDialog() == true)
+            {
+                SetStatus("Settings saved");
+                LoadSettings();
+            }
         }
 
         private void CalculateSongGroupIndexes()
