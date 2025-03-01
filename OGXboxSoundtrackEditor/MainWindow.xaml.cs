@@ -78,13 +78,6 @@ namespace OGXboxSoundtrackEditor
             bitrate = Properties.Settings.Default.bitrate;
         }
 
-        private void UpdateStatus(string s)
-        {
-            Dispatcher.Invoke(new Action(() => {
-                txtStatus.Text = s;
-            }));
-        }
-
         private void AddEntriesToLog()
         {
             foreach (FtpLogEntry entry in ftpClient.ftpLogEntries)
