@@ -20,9 +20,9 @@
         <Menu Grid.ColumnSpan="2">
             <MenuItem Header="_File">
                 <MenuItem Header="_New" Click="mnuNew_Click" />
-                <MenuItem x:Name="mnuOpenFromFTP" Header="Open From Ftp" Click="mnuOpenFromFtp_Click" IsEnabled="True" />
-                <MenuItem Header="Backup From Ftp (to .zip)" Click="mnuBackupFromFtp_Click" IsEnabled="False" />
-                <MenuItem Header="Upload Backup To Ftp" Click="mnuUploadBackupToFtp_Click" IsEnabled="False" />
+                <MenuItem x:Name="mnuOpenFromFTP" Header="Connect to Xbox" Click="mnuOpenFromFtp_Click" IsEnabled="True" />
+                <MenuItem Header="Backup from Xbox" Click="mnuBackupFromFtp_Click" IsEnabled="False" />
+                <MenuItem Header="Upload Backup to Xbox" Click="mnuUploadBackupToFtp_Click" IsEnabled="False" />
                 <Separator />
                 <MenuItem Header="_Exit" Click="mnuExit_Click" />
             </MenuItem>
