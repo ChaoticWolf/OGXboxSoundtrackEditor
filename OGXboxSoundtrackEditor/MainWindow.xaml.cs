@@ -1,5 +1,7 @@
-﻿using Microsoft.VisualBasic;
+﻿using FluentFTP.Exceptions;
+using Microsoft.VisualBasic;
 using Microsoft.Win32;
+using FluentFTP;
 using NAudio.Wave;
 using System;
 using System.Collections.Generic;
@@ -14,7 +16,9 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using WMPLib;
+using static System.Net.WebRequestMethods;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
+using System.Reflection.Emit;
 
 namespace OGXboxSoundtrackEditor
 {
@@ -27,7 +31,7 @@ namespace OGXboxSoundtrackEditor
 
         Thread thrFtpControl;
 
-        FtpClient ftpClient;
+        FtpClient FTP;
 
         bool blankSoundtrackAdded = false;
         int blankSoundtrackId = 0;
@@ -78,12 +82,47 @@ namespace OGXboxSoundtrackEditor
             bitrate = Properties.Settings.Default.bitrate;
         }
 
-        private void AddEntriesToLog()
+        private bool ConnectToXbox()
         {
-            foreach (FtpLogEntry entry in ftpClient.ftpLogEntries)
+            //If the user hasn't set an IP or output directory, prompt to set one
+            if (string.IsNullOrEmpty(ftpIpAddress))
             {
-                Properties.Settings.Default.logStrings += entry.EntryData + Environment.NewLine;
+                MessageBoxResult DialogResult = MessageBox.Show("No FTP IP Address set in settings. Do you want to configure an IP Address?", "No FTP IP Set", MessageBoxButton.YesNo, MessageBoxImage.Information);
+                if (DialogResult == MessageBoxResult.Yes)
+                {
+                    UserSettings Settings = new UserSettings();
+                    if (Settings.ShowDialog() != true)
+                    {
+                        return false;
+                    }
+                }
             }
+
+            FTP = new FtpClient();
+            FTP.Host = ftpIpAddress;
+            FTP.Credentials = new NetworkCredential(ftpUsername, ftpPassword);
+            FTP.Port = 21; //TODO: Allow this to be user configurable
+
+            //Connect to the Xbox
+            SetStatus("Connecting to Xbox " + ftpIpAddress + "...");
+
+            try
+            {
+                FTP.Connect();
+                return true;
+            }
+            catch (FtpAuthenticationException ex)
+            {
+                SetStatus("Couldn't login to Xbox");
+                MessageBox.Show("Could not login to the Xbox.\n" + ex.Message, "Couldn't Login", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            catch (Exception ex)
+            {
+                SetStatus("Could not connect to Xbox");
+                MessageBox.Show("Could not connect to the Xbox.\n" + ex.Message, "Connection Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            return false;
         }
 
         private void mnuNew_Click(object sender, RoutedEventArgs e)
@@ -117,37 +156,39 @@ namespace OGXboxSoundtrackEditor
 
         private void OpenDbFromStream()
         {
+            if (!ConnectToXbox())
+            {
+                return;
+            }
+
+            SetStatus("Downloading soundtrack database...");
+
             try
             {
-                ftpClient = new FtpClient(ftpIpAddress, ftpUsername, ftpPassword);
-                if (!ftpClient.Connect())
+                //Check if music directory is on the Xbox
+                if (!FTP.DirectoryExists("/E/TDATA/fffe0000/music"))
                 {
-                    txtStatus.Text = "Failed to connect to FTP server.";
-                    return;
-                }
-                if (!ftpClient.Login())
-                {
-                    txtStatus.Text = "Failed to login to FTP server.";
-                    return;
-                }
-                if (!ftpClient.ChangeWorkingDirectory(@"/E/TDATA/fffe0000/music"))
-                {
-                    if (!ftpClient.MakeDirectory(@"/E/TDATA/fffe0000/music"))
+                    if (!FTP.CreateDirectory("/E/TDATA/fffe0000/music"))
                     {
-                        txtStatus.Text = "Failed to create directory on FTP server.";
-                        ftpClient.Disconnect();
+                        SetStatus("Failed to create directory on FTP server.");
                         return;
                     }
                 }
-                if (!ftpClient.Retrieve(@"ST.DB"))
+
+                FTP.SetWorkingDirectory("/E/TDATA/fffe0000/music");
+
+                if (!FTP.FileExists("ST.DB"))
                 {
-                    txtStatus.Text = "Failed to open ST.DB from FTP server.";
-                    ftpClient.Disconnect();
                     return;
                 }
-                ftpClient.Disconnect();
 
-                BinaryReader bReader = new BinaryReader(new MemoryStream(ftpClient.downloadedBytes), Encoding.Unicode);
+                if (!FTP.DownloadBytes(out byte[] DownloadedBytes, "/E/TDATA/fffe0000/music/ST.DB"))
+                {
+                    SetStatus("Couldn't download soundtrack database");
+                    return;
+                }
+
+                BinaryReader bReader = new BinaryReader(new MemoryStream(DownloadedBytes), Encoding.Unicode);
                 magic = bReader.ReadInt32();
                 numSoundtracks = bReader.ReadInt32();
                 nextSoundtrackId = bReader.ReadInt32();
@@ -249,35 +290,29 @@ namespace OGXboxSoundtrackEditor
                         }
                     }
                 }
+
                 bReader.Close();
 
                 Dispatcher.Invoke(new Action(() =>
                 {
                     btnAddSoundtrack.IsEnabled = true;
                     listSoundtracks.ItemsSource = soundtracks;
-                    txtStatus.Text = "DB Loaded Successfully";
                 }));
+
+                SetStatus("Soundtrack database loaded");
             }
-            catch (SocketException sockEx)
+            catch (FtpException InnerException)
             {
-                
                 Dispatcher.Invoke(new Action(() =>
                 {
-                    txtStatus.Text = "Failed to connect to FTP server.";
                     gridMain.IsEnabled = true;
                 }));
+
+                SetStatus("Couldn't retrieve soundtracks");
+                MessageBox.Show("Couldn't retrieve soundtracks.\n" + InnerException, "Couldn't Retrieve Soundtracks", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            catch (IOException ioEx)
-            {
-                
-                Dispatcher.Invoke(new Action(() =>
-                {
-                    txtStatus.Text = "Input/Output error on stream.";
-                    gridMain.IsEnabled = true;
-                }));
-                return;
-            }
+            /*
             catch
             {
                 Dispatcher.Invoke(new Action(() =>
@@ -287,7 +322,7 @@ namespace OGXboxSoundtrackEditor
                 }));
                 return;
             }
-
+            */
             Dispatcher.Invoke(new Action(() =>
             {
                 gridMain.IsEnabled = true;
@@ -745,25 +780,14 @@ namespace OGXboxSoundtrackEditor
 
                 if (!foundInArray)
                 {
+                    if (!ConnectToXbox())
+                    {
+                        return;
+                    }
 
-                    ftpClient = new FtpClient(ftpIpAddress, ftpUsername, ftpPassword);
-                    if (!ftpClient.Connect())
-                    {
-                        return;
-                    }
-                    if (!ftpClient.Login())
-                    {
-                        return;
-                    }
-                    if (!ftpClient.ChangeWorkingDirectory(@"/E/TDATA/fffe0000/music/" + tempSong.soundtrackId.ToString("X4")))
-                    {
-                        return;
-                    }
-                    if (!ftpClient.DeleteFile(tempSong.soundtrackId.ToString("X4") + tempSong.id.ToString("X4") + @".wma"))
-                    {
-                        return;
-                    }
-                    ftpClient.Disconnect();
+                    FTP.SetWorkingDirectory("/E/TDATA/fffe0000/music/" + tempSong.soundtrackId.ToString("X4"));
+
+                    FTP.DeleteFile(tempSong.soundtrackId.ToString("X4") + tempSong.id.ToString("X4") + @".wma");
                 }
 
                 tempSoundtrack.numSongs--;
@@ -932,33 +956,15 @@ namespace OGXboxSoundtrackEditor
 
         private void FtpSTDB()
         {
+            if (!ConnectToXbox())
+            {
+                return;
+            }
             try
             {
-                ftpClient = new FtpClient(ftpIpAddress, ftpUsername, ftpPassword);
-                if (!ftpClient.Connect())
-                {
-                    SetStatus("Error: Failed To Connnect To Xbox");
-                    return;
-                }
-                if (!ftpClient.Login())
-                {
-                    SetStatus("Error: Wrong Username Or Password");
-                    return;
-                }
-                if (!ChangeToMusicDirectory())
-                {
-                    SetStatus("Error: Unable To Create Music Folder");
-                    return;
-                }
+                FTP.SetWorkingDirectory("/E/TDATA/fffe0000/music/");
 
-                ftpClient.DeleteFile("ST.DB");
-                ftpClient.TransferBinaryMode();
-                ftpClient.toUploadBytes = GetDbBytes();
-                if (!ftpClient.Store("ST.DB"))
-                {
-                    Debug.WriteLine("ERROR: STOR ST.DB failed");
-                    return;
-                }
+                FTP.UploadBytes(GetDbBytes(), "ST.DB", FtpRemoteExists.Overwrite); //times out
 
                 Dispatcher.Invoke(new Action(() =>
                 {
@@ -968,31 +974,17 @@ namespace OGXboxSoundtrackEditor
 
                 for (int i = 0; i < ftpDestPaths.Count; i++)
                 {
-                    ftpClient.MakeDirectory(ftpSoundtrackIds[i]);
+                    FTP.CreateDirectory(ftpSoundtrackIds[i]);
 
-                    if (!ftpClient.ChangeWorkingDirectory(@"/E/TDATA/fffe0000/music/" + ftpSoundtrackIds[i]))
-                    {
-                        return;
-                    }
+                    FTP.SetWorkingDirectory("/E/TDATA/fffe0000/music/" + ftpSoundtrackIds[i]);
 
-                    if (!ftpClient.Store(ftpLocalPaths[i], ftpDestPaths[i]))
-                    {
-                        Debug.WriteLine("ERROR: STOR " + ftpDestPaths[i] + " failed");
-                        return;
-                    }
+                    FTP.UploadFile(ftpLocalPaths[i], ftpDestPaths[i], FtpRemoteExists.Overwrite);
 
                     Dispatcher.Invoke(new Action(() =>
                     {
                         progFtpTransfer.Value++;
                     }));
-
-                    if (!ftpClient.ChangeWorkingDirectory(@"/E/TDATA/fffe0000/music"))
-                    {
-                        return;
-                    }
                 }
-
-                ftpClient.Disconnect();
 
                 Dispatcher.Invoke(new Action(() =>
                 {
@@ -1015,8 +1007,8 @@ namespace OGXboxSoundtrackEditor
                 {
                     progFtpTransfer.Value = 0;
                 }));
-                logLines = ftpClient.ftpLogEntries;
             }
+
             ftpDestPaths.Clear();
             ftpLocalPaths.Clear();
             ftpSoundtrackIds.Clear();
@@ -1025,99 +1017,38 @@ namespace OGXboxSoundtrackEditor
 
         private void DeleteAllFromFtp()
         {
-            ftpClient = new FtpClient(ftpIpAddress, ftpUsername, ftpPassword);
+            if (!ConnectToXbox()) 
+            { 
+                return; 
+            }
+            
             try
             {
-                if (!ftpClient.Connect())
+                if (FTP.DirectoryExists("/E/TDATA/fffe0000/music/"))
                 {
-                    SetStatus("Error: Failed To Connnect To Xbox");
-                    return;
-                }
-                if (!ftpClient.Login())
-                {
-                    SetStatus("Error: Wrong Username Or Password");
-                    return;
-                }
-                if (!ftpClient.ChangeWorkingDirectory(@"/E/TDATA/fffe0000/music"))
-                {
-                    SetStatus("Error: No Music To Delete");
-                    ftpClient.Disconnect();
-                    return;
+                    FTP.SetWorkingDirectory("/E/TDATA/fffe0000/music/");
+
+                    //TODO: Using EmptyDirectory and DeleteDirectory only seems to work on XBMC, get it working for other dashboards
+                    FTP.EmptyDirectory("/E/TDATA/fffe0000/music/");
                 }
 
-                ftpClient.List();
-                List<FtpDirectory> soundtrackFolders = ftpClient.GetDirectories();
-                List<FtpFile> soundtrackFiles = ftpClient.GetFiles();
-
-                foreach (FtpDirectory tempDir in soundtrackFolders)
-                {
-                    if (tempDir.Name == "..")
-                    {
-                        continue;
-                    }
-
-                    if (!ftpClient.ChangeWorkingDirectory(tempDir.Name))
-                    {
-                        ftpClient.Disconnect();
-                        return;
-                    }
-
-                    ftpClient.List();
-                    List<FtpFile> subfolderFiles = ftpClient.GetFiles();
-
-                    foreach (FtpFile tempFile in subfolderFiles)
-                    {
-                        if (!ftpClient.DeleteFile(tempFile.name))
-                        {
-                            ftpClient.Disconnect();
-                            return;
-                        }
-                    }
-                    if (!ftpClient.ChangeWorkingDirectory(@"/E/TDATA/fffe0000/music"))
-                    {
-                        ftpClient.Disconnect();
-                        return;
-                    }
-                    if (!ftpClient.DeleteFolder(tempDir.Name))
-                    {
-                        ftpClient.Disconnect();
-                        return;
-                    }
-                }
-
-                foreach (FtpFile tempFile in soundtrackFiles)
-                {
-                    if (!ftpClient.DeleteFile(tempFile.name))
-                    {
-                        ftpClient.Disconnect();
-                        return;
-                    }
-                }
-
-                ftpClient.Disconnect();
-                Dispatcher.Invoke(new Action(() => {
-                    txtStatus.Text = "DB Deleted From FTP";
-                }));
+                SetStatus("Deleted soundtracks from Xbox");
             }
             catch (Exception ex)
             {
-                Dispatcher.Invoke(new Action(() => {
-                    txtStatus.Text = "Critical Error";
-                }));
+                SetStatus("Critical Error");
             }
             finally
             {
                 Dispatcher.Invoke(new Action(() => {
                     gridMain.IsEnabled = true;
                 }));
-                logLines = ftpClient.ftpLogEntries;
             }
         }
 
         private void mnuOpenFromFtp_Click(object sender, RoutedEventArgs e)
         {
             gridMain.IsEnabled = false;
-            txtStatus.Text = "Connecting to " + ftpIpAddress.ToString();
 
             Thread openSTDB = new Thread(new ThreadStart(OpenDbFromStream));
             openSTDB.Start();
@@ -1193,9 +1124,10 @@ namespace OGXboxSoundtrackEditor
 
             listSongs.Items.Refresh();
         }
-
+        
         private void mnuBackupFromFtp_Click(object sender, RoutedEventArgs e)
         {
+            /*
             SaveFileDialog sDialog = new SaveFileDialog();
             sDialog.Filter = "Zip files (*.zip)|*.zip";
             sDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
@@ -1208,10 +1140,12 @@ namespace OGXboxSoundtrackEditor
             txtStatus.Text = "Backing Up From FTP";
             thrFtpControl = new Thread(new ParameterizedThreadStart(BackupFromFtp));
             thrFtpControl.Start(sDialog.FileName);
+            */
         }
-
+        
         private void BackupFromFtp(object zipPath)
         {
+            /*
             try
             {
                 using (FileStream fStream = new FileStream((string)zipPath, FileMode.Create))
@@ -1306,60 +1240,12 @@ namespace OGXboxSoundtrackEditor
                     gridMain.IsEnabled = true;
                 }));
             }
+            */
         }
-
-        private bool ChangeToMusicDirectory()
-        {
-            if (!ftpClient.ChangeWorkingDirectory(@"/E/TDATA/fffe0000/music"))
-            {
-                // try to change to save folder
-                if (!ftpClient.ChangeWorkingDirectory(@"/E/TDATA/fffe0000"))
-                {
-                    if (!ftpClient.ChangeWorkingDirectory(@"/E/TDATA"))
-                    {
-                        ftpClient.Disconnect();
-                        return false;
-                    }
-                    else
-                    {
-                        if (!ftpClient.MakeDirectory("fffe0000"))
-                        {
-                            ftpClient.Disconnect();
-                            return false;
-                        }
-                        else
-                        {
-                            if (!ftpClient.ChangeWorkingDirectory(@"/E/TDATA/fffe0000"))
-                            {
-                                ftpClient.Disconnect();
-                                return false;
-                            }
-                            else
-                            {
-                                if (!ftpClient.MakeDirectory("music"))
-                                {
-                                    ftpClient.Disconnect();
-                                    return false;
-                                }
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    // try to make music directory
-                    if (!ftpClient.MakeDirectory("music"))
-                    {
-                        ftpClient.Disconnect();
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-
+        
         private void mnuUploadBackupToFtp_Click(object sender, RoutedEventArgs e)
         {
+            /*
             OpenFileDialog ofDialog = new OpenFileDialog();
             ofDialog.Filter = "Zip files (*.zip)|*.zip";
             ofDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
@@ -1372,6 +1258,7 @@ namespace OGXboxSoundtrackEditor
             txtStatus.Text = "Uploading Backup To FTP";
             thrFtpControl = new Thread(new ParameterizedThreadStart(UploadBackupToFtp));
             thrFtpControl.Start(ofDialog.FileName);
+            */
         }
 
         private void SetStatus(string msg)
@@ -1380,9 +1267,10 @@ namespace OGXboxSoundtrackEditor
                 txtStatus.Text = msg;
             }));
         }
-
+        
         private void UploadBackupToFtp(object zipPath)
         {
+            /*
             ftpClient = new FtpClient(ftpIpAddress, ftpUsername, ftpPassword);
             try
             {
@@ -1474,23 +1362,9 @@ namespace OGXboxSoundtrackEditor
                     gridMain.IsEnabled = true;
                 }));
             }
+            */
         }
-
-        private void mnuFtpLog_Click(object sender, RoutedEventArgs e)
-        {
-            FtpLog ftpLog;
-            if (ftpClient == null)
-            {
-                ftpLog = new FtpLog(new List<FtpLogEntry>());
-            }
-            else
-            {
-                ftpLog = new FtpLog(ftpClient.ftpLogEntries);
-            }
-            ftpLog.Top = this.Top + 100;
-            ftpLog.Left = this.Left + 100;
-            ftpLog.ShowDialog();
-        }
+        
 
         private void btnAddMp3_Click(object sender, RoutedEventArgs e)
         {

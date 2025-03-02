@@ -102,23 +102,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="FtpClient.cs" />
-    <Compile Include="FtpDirectory.cs" />
-    <Compile Include="FtpFile.cs" />
-    <Compile Include="FtpLog.xaml.cs">
-      <DependentUpon>FtpLog.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="FtpLogEntry.cs" />
     <Compile Include="Song.cs" />
     <Compile Include="SongGroup.cs" />
     <Compile Include="Soundtrack.cs" />
     <Compile Include="UserSettings.xaml.cs">
       <DependentUpon>UserSettings.xaml</DependentUpon>
     </Compile>
-    <Page Include="FtpLog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
