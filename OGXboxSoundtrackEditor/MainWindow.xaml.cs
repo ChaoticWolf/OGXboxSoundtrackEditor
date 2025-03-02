@@ -511,16 +511,16 @@ namespace OGXboxSoundtrackEditor
 
         private void btnAddSoundtrack_Click(object sender, RoutedEventArgs e)
         {
-            string title = Interaction.InputBox("Enter a new soundtrack title", "Soundtrack Title", "", -1, -1).Trim();
-            title = title.Trim();
-            if (title == "")
+            string title = Interaction.InputBox("Enter a new soundtrack title.", "Edit Soundtrack Title", "", -1, -1);
+
+            if (string.IsNullOrEmpty(title))
             {
-                MessageBox.Show("Title cannot be empty.  Please try again.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Title cannot be empty.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             else if (title.Length > 64)
             {
-                MessageBox.Show("Title cannot be longer than 64 characters.  Please try again.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Title cannot be longer than 64 characters.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -684,19 +684,21 @@ namespace OGXboxSoundtrackEditor
             char[] titleChars = new char[32];
             IWMPMedia mediainfo = wmp.newMedia(path);
             string title = mediainfo.name.Trim();
+
             if (title.Length > 32)
             {
                 bool validTitle = false;
                 while (!validTitle)
                 {
-                    title = Interaction.InputBox("Song name " + mediainfo.name + " is too long, please enter a new one", "Song Title", "", -1, -1).Trim();
-                    if (title.Length > 32)
+                    title = Interaction.InputBox("Song name " + mediainfo.name + " is too long. Please enter a new one.", "Song Title", "", -1, -1);
+                    
+                    if (string.IsNullOrEmpty(title))
                     {
-                        MessageBox.Show("Title cannot be longer than 32 characters.  Please try again.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show("Title cannot be blank.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
-                    else if (title == "")
+                    else if (title.Length > 32)
                     {
-                        MessageBox.Show("Title cannot be blank.  Please try again.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show("Title cannot be longer than 32 characters.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                     else
                     {
@@ -704,6 +706,7 @@ namespace OGXboxSoundtrackEditor
                     }
                 }
             }
+
             title.CopyTo(0, titleChars, 0, title.Length);
             return titleChars;
         }
@@ -964,7 +967,7 @@ namespace OGXboxSoundtrackEditor
             {
                 FTP.SetWorkingDirectory("/E/TDATA/fffe0000/music/");
 
-                FTP.UploadBytes(GetDbBytes(), "ST.DB", FtpRemoteExists.Overwrite); //times out
+                FTP.UploadBytes(GetDbBytes(), "ST.DB", FtpRemoteExists.Overwrite);
 
                 Dispatcher.Invoke(new Action(() =>
                 {
@@ -1057,18 +1060,20 @@ namespace OGXboxSoundtrackEditor
         private void btnRenameSoundtrack_Click(object sender, RoutedEventArgs e)
         {
             Soundtrack sTrack = (Soundtrack)listSoundtracks.SelectedItem;
-            string title = Interaction.InputBox("Enter a new soundtrack title", "Soundtrack Title", new string(sTrack.name), -1, -1).Trim();
-            title = title.Trim();
-            if (title == "")
+
+            string title = Interaction.InputBox("Enter a new soundtrack title.", "Edit Soundtrack Title", new string(sTrack.name), -1, -1);
+
+            if (string.IsNullOrEmpty(title))
             {
-                MessageBox.Show("Title cannot be empty.  Please try again.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Title cannot be empty.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             else if (title.Length > 64)
             {
-                MessageBox.Show("Title cannot be longer than 64 characters.  Please try again.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Title cannot be longer than 64 characters.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
+
             sTrack.name = new char[64];
             title.CopyTo(0, sTrack.name, 0, title.Length);
 
@@ -1089,18 +1094,20 @@ namespace OGXboxSoundtrackEditor
         private void btnRenameSong_Click(object sender, RoutedEventArgs e)
         {
             Song song = (Song)listSongs.SelectedItem;
-            string title = Interaction.InputBox("Enter a new song title", "Soundtrack Title", song.Name, -1, -1).Trim();
-            title = title.Trim();
-            if (title == "")
+
+            string title = Interaction.InputBox("Enter a new song title.", "Edit Soundtrack Title", song.Name, -1, -1);
+
+            if (string.IsNullOrEmpty(title))
             {
-                MessageBox.Show("Title cannot be empty.  Please try again.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Title cannot be empty.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             else if (title.Length > 32)
             {
-                MessageBox.Show("Title cannot be longer than 32 characters.  Please try again.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Title cannot be longer than 32 characters.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
+
             foreach (Soundtrack sTrack in soundtracks)
             {
                 if (sTrack.id == song.soundtrackId)
