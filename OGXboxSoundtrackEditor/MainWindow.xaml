@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:OGXboxSoundtrackEditor"
         mc:Ignorable="d"
-        Title="Xbox Soundtrack Editor" Height="450" Width="650">
+        Title="Xbox Soundtrack Editor" Height="450" Width="850">
     <Grid x:Name="gridMain">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="300"/>
@@ -67,9 +67,9 @@
                 <ListView x:Name="listSongs" Grid.Row="1" Grid.Column="1" Margin="10" SelectionChanged="listSongs_SelectionChanged">
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn Header="Name" Width="300" DisplayMemberBinding="{Binding Name}" />
+                            <GridViewColumn Header="Name" Width="250" DisplayMemberBinding="{Binding Name}" />
                             <GridViewColumn Header="Time (ms)" Width="60" DisplayMemberBinding="{Binding TimeMs}" />
-                            <GridViewColumn Header="Song Group ID" Width="60" DisplayMemberBinding="{Binding SongGroupId}" />
+                            <GridViewColumn Header="Song Group ID" Width="90" DisplayMemberBinding="{Binding SongGroupId}" />
                             <GridViewColumn Header="Song ID" Width="60" DisplayMemberBinding="{Binding Identity}" />
                         </GridView>
                     </ListView.View>
