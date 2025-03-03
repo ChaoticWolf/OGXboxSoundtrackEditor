@@ -150,12 +150,12 @@ namespace OGXboxSoundtrackEditor
 
             gridMain.IsEnabled = false;
 
-            await Task.Run(() => DeleteAllFromFtp());
+            await Task.Run(() => DeleteTracksFromXbox());
             
             gridMain.IsEnabled = true;
         }
 
-        private void OpenDbFromStream()
+        private void OpenDbFromXbox()
         {
             if (!ConnectToXbox())
             {
@@ -483,15 +483,15 @@ namespace OGXboxSoundtrackEditor
             {
                 listSongs.ItemsSource = null;
                 btnDeleteSoundtrack.IsEnabled = false;
-                btnAddMp3.IsEnabled = false;
-                btnAddWma.IsEnabled = false;
+                btnAddMP3.IsEnabled = false;
+                btnAddWMA.IsEnabled = false;
                 btnRenameSoundtrack.IsEnabled = false;
                 return;
             }
             else
             {
-                btnAddMp3.IsEnabled = true;
-                btnAddWma.IsEnabled = true;
+                btnAddMP3.IsEnabled = true;
+                btnAddWMA.IsEnabled = true;
                 btnRenameSoundtrack.IsEnabled = true;
             }
 
@@ -538,7 +538,7 @@ namespace OGXboxSoundtrackEditor
             blankSoundtrackAdded = true;
         }
 
-        private async void btnAddWma_Click(object sender, RoutedEventArgs e)
+        private async void btnAddWMA_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog oDialog = new OpenFileDialog();
             oDialog.Filter = "Windows Media Audio files (*.wma)|*.wma";
@@ -551,7 +551,7 @@ namespace OGXboxSoundtrackEditor
 
             gridMain.IsEnabled = false;
 
-            await Task.Run(() => AddWmaFiles(oDialog.FileNames));
+            await Task.Run(() => AddWMAFiles(oDialog.FileNames));
 
             gridMain.IsEnabled = true;
 
@@ -561,7 +561,7 @@ namespace OGXboxSoundtrackEditor
             }
         }
 
-        private void AddWmaFiles(object paths)
+        private void AddWMAFiles(object paths)
         {
             try
             {
@@ -590,7 +590,7 @@ namespace OGXboxSoundtrackEditor
 
                 SetStatus("WMA tracks added");
 
-                FtpSTDB();
+                UploadDbToXbox();
             }
             catch
             {
@@ -727,7 +727,7 @@ namespace OGXboxSoundtrackEditor
                 FindNextSoundtrackId();
             }
 
-            FtpSTDB();
+            UploadDbToXbox();
         }
 
         private void btnDeleteSongs_Click(object sender, RoutedEventArgs e)
@@ -796,7 +796,7 @@ namespace OGXboxSoundtrackEditor
             ReorderSongsInGroups(tempSoundtrack);
             FindNextSongId();
 
-            FtpSTDB();
+            UploadDbToXbox();
         }
 
         
@@ -950,7 +950,7 @@ namespace OGXboxSoundtrackEditor
             }
         }
 
-        private void FtpSTDB()
+        private void UploadDbToXbox()
         {
             if (!ConnectToXbox())
             {
@@ -1011,7 +1011,7 @@ namespace OGXboxSoundtrackEditor
             return;
         }
 
-        private void DeleteAllFromFtp()
+        private void DeleteTracksFromXbox()
         {
             if (!ConnectToXbox()) 
             { 
@@ -1038,11 +1038,11 @@ namespace OGXboxSoundtrackEditor
             }
         }
 
-        private async void mnuOpenFromFtp_Click(object sender, RoutedEventArgs e)
+        private async void mnuOpenDbFromXbox_Click(object sender, RoutedEventArgs e)
         {
             gridMain.IsEnabled = false;
 
-            await Task.Run(() => OpenDbFromStream());
+            await Task.Run(() => OpenDbFromXbox());
 
             gridMain.IsEnabled = true;
 
@@ -1072,7 +1072,7 @@ namespace OGXboxSoundtrackEditor
             sTrack.name = new char[64];
             title.CopyTo(0, sTrack.name, 0, title.Length);
 
-            FtpSTDB();
+            UploadDbToXbox();
 
             listSoundtracks.Items.Refresh();
         }
@@ -1122,12 +1122,12 @@ namespace OGXboxSoundtrackEditor
                 }
             }
 
-            FtpSTDB();
+            UploadDbToXbox();
 
             listSongs.Items.Refresh();
         }
         
-        private void mnuBackupFromFtp_Click(object sender, RoutedEventArgs e)
+        private void mnuBackupFromXbox_Click(object sender, RoutedEventArgs e)
         {
             /*
             SaveFileDialog sDialog = new SaveFileDialog();
@@ -1145,7 +1145,7 @@ namespace OGXboxSoundtrackEditor
             */
         }
         
-        private void BackupFromFtp(object zipPath)
+        private void BackupFromXbox(object zipPath)
         {
             /*
             try
@@ -1245,7 +1245,7 @@ namespace OGXboxSoundtrackEditor
             */
         }
         
-        private void mnuUploadBackupToFtp_Click(object sender, RoutedEventArgs e)
+        private void mnuUploadBackupToXbox_Click(object sender, RoutedEventArgs e)
         {
             /*
             OpenFileDialog ofDialog = new OpenFileDialog();
@@ -1270,7 +1270,7 @@ namespace OGXboxSoundtrackEditor
             }));
         }
         
-        private void UploadBackupToFtp(object zipPath)
+        private void UploadBackupToXbox(object zipPath)
         {
             /*
             ftpClient = new FtpClient(ftpIpAddress, ftpUsername, ftpPassword);
@@ -1368,7 +1368,7 @@ namespace OGXboxSoundtrackEditor
         }
         
 
-        private async void btnAddMp3_Click(object sender, RoutedEventArgs e)
+        private async void btnAddMP3_Click(object sender, RoutedEventArgs e)
         {
             if (!Directory.Exists(outputFolder))
             {
@@ -1388,12 +1388,12 @@ namespace OGXboxSoundtrackEditor
             progFtpTransfer.Value = 0;
             gridMain.IsEnabled = false;
 
-            await Task.Run(() => AddMp3Files(oDialog.FileNames));
+            await Task.Run(() => AddMP3Files(oDialog.FileNames));
 
             gridMain.IsEnabled = true;
         }
 
-        private void AddMp3Files(object paths)
+        private void AddMP3Files(object paths)
         {
             Soundtrack sTrack = null;
             Dispatcher.Invoke(new Action(() =>
@@ -1437,7 +1437,7 @@ namespace OGXboxSoundtrackEditor
                 SetStatus("Unknown error");
             }
 
-            FtpSTDB();
+            UploadDbToXbox();
         }
     }
 }
