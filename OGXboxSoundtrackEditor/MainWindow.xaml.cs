@@ -153,6 +153,11 @@ namespace OGXboxSoundtrackEditor
             await Task.Run(() => DeleteTracksFromXbox());
             
             gridMain.IsEnabled = true;
+
+            if (FTP.IsConnected)
+            {
+                FTP.Disconnect();
+            }
         }
 
         private void OpenDbFromXbox()
@@ -303,6 +308,7 @@ namespace OGXboxSoundtrackEditor
 
                 Dispatcher.Invoke(new Action(() =>
                 {
+                    mnuSaveToXbox.IsEnabled = true;
                     btnAddSoundtrack.IsEnabled = true;
                     listSoundtracks.ItemsSource = soundtracks;
                 }));
@@ -982,20 +988,12 @@ namespace OGXboxSoundtrackEditor
                     }));
                 }
 
-                Dispatcher.Invoke(new Action(() =>
-                {
-                    txtStatus.Text = "Uploading Success";
-                    gridMain.IsEnabled = true;
-                }));
+                SetStatus("Uploaded to Xbox");
             }
             catch (Exception ex)
             {
+                SetStatus("Error uploading changes");
                 MessageBox.Show(ex.ToString());
-                Dispatcher.Invoke(new Action(() =>
-                {
-                    txtStatus.Text = "Failed To Upload Changes";
-                    gridMain.IsEnabled = true;
-                }));
             }
             finally
             {
@@ -1043,6 +1041,20 @@ namespace OGXboxSoundtrackEditor
             gridMain.IsEnabled = false;
 
             await Task.Run(() => OpenDbFromXbox());
+
+            gridMain.IsEnabled = true;
+
+            if (FTP.IsConnected)
+            {
+                FTP.Disconnect();
+            }
+        }
+
+        private async void mnuSaveToXbox_Click(object sender, RoutedEventArgs e)
+        {
+            gridMain.IsEnabled = false;
+
+            await Task.Run(() => UploadDbToXbox());
 
             gridMain.IsEnabled = true;
 
