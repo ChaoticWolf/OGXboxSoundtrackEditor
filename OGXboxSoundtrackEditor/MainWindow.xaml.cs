@@ -19,6 +19,8 @@ using WMPLib;
 using static System.Net.WebRequestMethods;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 using System.Reflection.Emit;
+using System.Threading.Tasks;
+using System.Windows.Threading;
 
 namespace OGXboxSoundtrackEditor
 {
@@ -28,8 +30,6 @@ namespace OGXboxSoundtrackEditor
     public partial class MainWindow : Window
     {
         List<FtpLogEntry> logLines = new List<FtpLogEntry>();
-
-        Thread thrFtpControl;
 
         FtpClient FTP;
 
@@ -125,7 +125,7 @@ namespace OGXboxSoundtrackEditor
             return false;
         }
 
-        private void mnuNew_Click(object sender, RoutedEventArgs e)
+        private async void mnuNew_Click(object sender, RoutedEventArgs e)
         {
             MessageBoxResult result = MessageBox.Show("This will delete your entire soundtrack database from the Xbox.  Are you sure?", "Delete Soundtrack Database", MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (result != MessageBoxResult.Yes)
@@ -149,9 +149,10 @@ namespace OGXboxSoundtrackEditor
             btnAddSoundtrack.IsEnabled = true;
 
             gridMain.IsEnabled = false;
-            txtStatus.Text = "Deleting DB From FTP";
-            thrFtpControl = new Thread(new ThreadStart(DeleteAllFromFtp));
-            thrFtpControl.Start();
+
+            await Task.Run(() => DeleteAllFromFtp());
+            
+            gridMain.IsEnabled = true;
         }
 
         private void OpenDbFromStream()
@@ -179,6 +180,7 @@ namespace OGXboxSoundtrackEditor
 
                 if (!FTP.FileExists("ST.DB"))
                 {
+                    SetStatus("No soundtracks found on Xbox");
                     return;
                 }
 
@@ -307,32 +309,17 @@ namespace OGXboxSoundtrackEditor
 
                 SetStatus("Soundtrack database loaded");
             }
-            catch (FtpException InnerException)
+            catch (FtpException ex)
             {
-                Dispatcher.Invoke(new Action(() =>
-                {
-                    gridMain.IsEnabled = true;
-                }));
-
                 SetStatus("Couldn't retrieve soundtracks");
-                MessageBox.Show("Couldn't retrieve soundtracks.\n" + InnerException, "Couldn't Retrieve Soundtracks", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Couldn't retrieve soundtracks.\n" + ex.Message, "Couldn't Retrieve Soundtracks", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            /*
             catch
             {
-                Dispatcher.Invoke(new Action(() =>
-                {
-                    txtStatus.Text = "Unknown Error.  Check the log for details.";
-                    gridMain.IsEnabled = true;
-                }));
+                SetStatus("Unknown error");
                 return;
             }
-            */
-            Dispatcher.Invoke(new Action(() =>
-            {
-                gridMain.IsEnabled = true;
-            }));
         }
 
         private void mnuSettings_Click(object sender, RoutedEventArgs e)
@@ -546,12 +533,12 @@ namespace OGXboxSoundtrackEditor
             listSoundtracks.SelectedItem = listSoundtracks.Items[soundtracks.Count - 1];
             listSoundtracks.Focus();
 
-            txtStatus.Text = "Added soundtrack " + title;
+            SetStatus("Added soundtrack " + title);
 
             blankSoundtrackAdded = true;
         }
 
-        private void btnAddWma_Click(object sender, RoutedEventArgs e)
+        private async void btnAddWma_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog oDialog = new OpenFileDialog();
             oDialog.Filter = "Windows Media Audio files (*.wma)|*.wma";
@@ -563,8 +550,15 @@ namespace OGXboxSoundtrackEditor
             }
 
             gridMain.IsEnabled = false;
-            Thread addWmaFiles = new Thread(new ParameterizedThreadStart(AddWmaFiles));
-            addWmaFiles.Start(oDialog.FileNames);
+
+            await Task.Run(() => AddWmaFiles(oDialog.FileNames));
+
+            gridMain.IsEnabled = true;
+
+            if (FTP.IsConnected)
+            {
+                FTP.Disconnect();
+            }
         }
 
         private void AddWmaFiles(object paths)
@@ -581,9 +575,10 @@ namespace OGXboxSoundtrackEditor
 
                 string[] realPaths = (string[])paths;
 
+                SetStatus("Adding WMA tracks...");
+
                 Dispatcher.Invoke(new Action(() =>
                 {
-                    txtStatus.Text = "Adding Wma Files";
                     progFtpTransfer.Maximum = realPaths.Length;
                 }));
 
@@ -593,21 +588,13 @@ namespace OGXboxSoundtrackEditor
                     AddSongLoop(soundtrackId, path);
                 }
 
-                Dispatcher.Invoke(new Action(() =>
-                {
-                    txtStatus.Text = "Wma Files Added Successfully";
-                    gridMain.IsEnabled = true;
-                }));
+                SetStatus("WMA tracks added");
 
                 FtpSTDB();
             }
             catch
             {
-                Dispatcher.Invoke(new Action(() =>
-                {
-                    txtStatus.Text = "Unknown Error.  Check the log for details";
-                    gridMain.IsEnabled = true;
-                }));
+                SetStatus("Unknown error");
             }
         }
 
@@ -1031,6 +1018,8 @@ namespace OGXboxSoundtrackEditor
                 return; 
             }
             
+            SetStatus("Deleting soundtracks from Xbox...");
+
             try
             {
                 if (FTP.DirectoryExists("/E/TDATA/fffe0000/music/"))
@@ -1047,20 +1036,20 @@ namespace OGXboxSoundtrackEditor
             {
                 SetStatus("Critical Error");
             }
-            finally
-            {
-                Dispatcher.Invoke(new Action(() => {
-                    gridMain.IsEnabled = true;
-                }));
-            }
         }
 
-        private void mnuOpenFromFtp_Click(object sender, RoutedEventArgs e)
+        private async void mnuOpenFromFtp_Click(object sender, RoutedEventArgs e)
         {
             gridMain.IsEnabled = false;
 
-            Thread openSTDB = new Thread(new ThreadStart(OpenDbFromStream));
-            openSTDB.Start();
+            await Task.Run(() => OpenDbFromStream());
+
+            gridMain.IsEnabled = true;
+
+            if (FTP.IsConnected)
+            {
+                FTP.Disconnect();
+            }
         }
 
         private void btnRenameSoundtrack_Click(object sender, RoutedEventArgs e)
@@ -1379,7 +1368,7 @@ namespace OGXboxSoundtrackEditor
         }
         
 
-        private void btnAddMp3_Click(object sender, RoutedEventArgs e)
+        private async void btnAddMp3_Click(object sender, RoutedEventArgs e)
         {
             if (!Directory.Exists(outputFolder))
             {
@@ -1399,8 +1388,9 @@ namespace OGXboxSoundtrackEditor
             progFtpTransfer.Value = 0;
             gridMain.IsEnabled = false;
 
-            Thread addMp3Files = new Thread(new ParameterizedThreadStart(AddMp3Files));
-            addMp3Files.Start(oDialog.FileNames);
+            await Task.Run(() => AddMp3Files(oDialog.FileNames));
+
+            gridMain.IsEnabled = true;
         }
 
         private void AddMp3Files(object paths)
@@ -1415,9 +1405,10 @@ namespace OGXboxSoundtrackEditor
 
             string[] realPaths = (string[])paths;
 
+            SetStatus("Converting MP3 tracks...");
+            
             Dispatcher.Invoke(new Action(() =>
             {
-                txtStatus.Text = "Converting Mp3 Files";
                 progFtpTransfer.Maximum = realPaths.Length;
             }));
 
@@ -1438,25 +1429,15 @@ namespace OGXboxSoundtrackEditor
                         progFtpTransfer.Value++;
                     }));
                 }
-                Dispatcher.Invoke(new Action(() =>
-                {
-                    txtStatus.Text = "Mp3 Files Added Successfully";
-                }));
+
+                SetStatus("MP3 tracks added");
             }
             catch
             {
-                Dispatcher.Invoke(new Action(() =>
-                {
-                    txtStatus.Text = "Unknown Error.  Check the log for details.";
-                }));
+                SetStatus("Unknown error");
             }
 
             FtpSTDB();
-
-            Dispatcher.Invoke(new Action(() =>
-            {
-                gridMain.IsEnabled = true;
-            }));
         }
     }
 }
