@@ -188,6 +188,12 @@ namespace OGXboxSoundtrackEditor
                     return;
                 }
 
+                if (DownloadedBytes.Length == 0)
+                {
+                    SetStatus("No soundtracks in database");
+                    return;
+                }
+
                 BinaryReader bReader = new BinaryReader(new MemoryStream(DownloadedBytes), Encoding.Unicode);
                 magic = bReader.ReadInt32();
                 numSoundtracks = bReader.ReadInt32();
