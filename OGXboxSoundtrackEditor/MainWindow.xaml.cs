@@ -510,18 +510,13 @@ namespace OGXboxSoundtrackEditor
 
         private void btnAddSoundtrack_Click(object sender, RoutedEventArgs e)
         {
-            string title = Interaction.InputBox("Enter a new soundtrack title.", "Edit Soundtrack Title", "", -1, -1);
+            TitleInput TitleInput = new TitleInput("Enter a soundtrack title.", "Soundtrack Title", 64);
+            if (TitleInput.ShowDialog() != true)
+            {
+                return;
+            }
 
-            if (string.IsNullOrEmpty(title))
-            {
-                MessageBox.Show("Title cannot be empty.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-            else if (title.Length > 64)
-            {
-                MessageBox.Show("Title cannot be longer than 64 characters.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
+            string title = TitleInput.TrackTitle;
 
             // create soundtrack
             Soundtrack sTrack = new Soundtrack();
@@ -606,7 +601,23 @@ namespace OGXboxSoundtrackEditor
 
         private void AddSongLoop(int soundtrackId, string path)
         {
-            char[] songTitle = GetSongTitle(path);
+            char[] songTitle = new char[32];
+            IWMPMedia mediainfo = wmp.newMedia(path);
+            string title = mediainfo.name.Trim();
+
+            if (title.Length > 32)
+            {
+                TitleInput TitleInput = new TitleInput("Song name " + mediainfo.name + " is too long. Please enter a new one.", "Edit Song Title", 32);
+                if (TitleInput.ShowDialog() != true)
+                {
+                    return;
+                }
+                
+                title = TitleInput.TrackTitle;
+            }
+
+            title.CopyTo(0, songTitle, 0, title.Length);
+
             for (int b = 0; b < soundtracks.Count; b++)
             {
                 if (soundtracks[b].id == soundtrackId)
@@ -690,7 +701,7 @@ namespace OGXboxSoundtrackEditor
                 while (!validTitle)
                 {
                     title = Interaction.InputBox("Song name " + mediainfo.name + " is too long. Please enter a new one.", "Song Title", "", -1, -1);
-                    
+
                     if (string.IsNullOrEmpty(title))
                     {
                         MessageBox.Show("Title cannot be blank.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -1068,18 +1079,13 @@ namespace OGXboxSoundtrackEditor
         {
             Soundtrack sTrack = (Soundtrack)listSoundtracks.SelectedItem;
 
-            string title = Interaction.InputBox("Enter a new soundtrack title.", "Edit Soundtrack Title", new string(sTrack.name), -1, -1);
+            TitleInput TitleInput = new TitleInput("Enter a new soundtrack title.", "Edit Soundtrack Title", 64);
+            if (TitleInput.ShowDialog() != true)
+            {
+                return;
+            }
 
-            if (string.IsNullOrEmpty(title))
-            {
-                MessageBox.Show("Title cannot be empty.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-            else if (title.Length > 64)
-            {
-                MessageBox.Show("Title cannot be longer than 64 characters.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
+            string title = TitleInput.TrackTitle;
 
             sTrack.name = new char[64];
             title.CopyTo(0, sTrack.name, 0, title.Length);
@@ -1102,18 +1108,13 @@ namespace OGXboxSoundtrackEditor
         {
             Song song = (Song)listSongs.SelectedItem;
 
-            string title = Interaction.InputBox("Enter a new song title.", "Edit Soundtrack Title", song.Name, -1, -1);
+            TitleInput TitleInput = new TitleInput("Enter a new song title.", "Edit Song Title", 32);
+            if (TitleInput.ShowDialog() != true)
+            {
+                return;
+            }
 
-            if (string.IsNullOrEmpty(title))
-            {
-                MessageBox.Show("Title cannot be empty.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-            else if (title.Length > 32)
-            {
-                MessageBox.Show("Title cannot be longer than 32 characters.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
+            string title = TitleInput.TrackTitle;
 
             foreach (Soundtrack sTrack in soundtracks)
             {

@@ -105,6 +105,9 @@
     <Compile Include="Song.cs" />
     <Compile Include="SongGroup.cs" />
     <Compile Include="Soundtrack.cs" />
+    <Compile Include="TitleInput.xaml.cs">
+      <DependentUpon>TitleInput.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserSettings.xaml.cs">
       <DependentUpon>UserSettings.xaml</DependentUpon>
     </Compile>
@@ -120,6 +123,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="TitleInput.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UserSettings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
