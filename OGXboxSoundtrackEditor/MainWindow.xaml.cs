@@ -22,6 +22,7 @@ using System.Reflection.Emit;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 using System.Runtime.InteropServices.WindowsRuntime;
+using GSF.Annotations;
 
 namespace OGXboxSoundtrackEditor
 {
@@ -112,6 +113,16 @@ namespace OGXboxSoundtrackEditor
             try
             {
                 FTP.Connect();
+                var server = FTP.SystemType;
+
+                //Check for Dashlaunch or XeXMenu. Their FTP servers set working directories even if they don't exist, so there's not much of a way to reliably check things
+                if (server.Contains("DLiFTPD") || server.Contains("XeXMenu"))
+                {
+                    SetStatus("Unsupported FTP server");
+                    MessageBox.Show("Sorry, this FTP server is not supported. Please use another dashboard.", "Unsupported FTP server", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return false;
+                }
+
                 return true;
             }
             catch (FtpAuthenticationException ex)
