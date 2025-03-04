@@ -21,6 +21,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 using System.Reflection.Emit;
 using System.Threading.Tasks;
 using System.Windows.Threading;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace OGXboxSoundtrackEditor
 {
@@ -45,6 +46,8 @@ namespace OGXboxSoundtrackEditor
         string ftpUsername;
         string ftpPassword;
         int bitrate;
+
+        string XboxMusicDirectory;
 
         List<string> ftpLocalPaths = new List<string>();
         List<string> ftpDestPaths = new List<string>();
@@ -160,6 +163,42 @@ namespace OGXboxSoundtrackEditor
             }
         }
 
+        private bool MusicWorkingDirectory()
+        {
+            if (FTP.DirectoryExists("/E/"))
+            {
+                XboxMusicDirectory = "/E/TDATA/fffe0000/music/";
+            }
+            //Check for PrometheOS
+            else if (FTP.DirectoryExists("/HDD0-E/"))
+            {
+                XboxMusicDirectory = "/HDD0-E/TDATA/fffe0000/music/";
+            }
+            //Check if this is an Xbox 360
+            else if (FTP.DirectoryExists("/Hdd1/"))
+            {
+                XboxMusicDirectory = "/Hdd1/Compatibility/Xbox1/TDATA/FFFE0000/MUSIC/";
+            }
+            else
+            {
+                SetStatus("Could not detect Xbox");
+                MessageBox.Show("Could not determine if the FTP server is an Xbox.", "Xbox Not Detected", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+
+            //Check if music directory is on the Xbox
+            if (!FTP.DirectoryExists(XboxMusicDirectory))
+            {
+                if (!FTP.CreateDirectory(XboxMusicDirectory))
+                {
+                    SetStatus("Couldn't create music directory on Xbox");
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         private void OpenDbFromXbox()
         {
             if (!ConnectToXbox())
@@ -171,17 +210,12 @@ namespace OGXboxSoundtrackEditor
 
             try
             {
-                //Check if music directory is on the Xbox
-                if (!FTP.DirectoryExists("/E/TDATA/fffe0000/music"))
+                if (!MusicWorkingDirectory())
                 {
-                    if (!FTP.CreateDirectory("/E/TDATA/fffe0000/music"))
-                    {
-                        SetStatus("Failed to create directory on FTP server.");
-                        return;
-                    }
+                    return;
                 }
 
-                FTP.SetWorkingDirectory("/E/TDATA/fffe0000/music");
+                FTP.SetWorkingDirectory(XboxMusicDirectory);
 
                 if (!FTP.FileExists("ST.DB"))
                 {
@@ -189,7 +223,7 @@ namespace OGXboxSoundtrackEditor
                     return;
                 }
 
-                if (!FTP.DownloadBytes(out byte[] DownloadedBytes, "/E/TDATA/fffe0000/music/ST.DB"))
+                if (!FTP.DownloadBytes(out byte[] DownloadedBytes, XboxMusicDirectory + "ST.DB"))
                 {
                     SetStatus("Couldn't download soundtrack database");
                     return;
@@ -798,7 +832,12 @@ namespace OGXboxSoundtrackEditor
                         return;
                     }
 
-                    FTP.SetWorkingDirectory("/E/TDATA/fffe0000/music/" + tempSong.soundtrackId.ToString("X4"));
+                    if (!MusicWorkingDirectory()) 
+                    {
+                        return; 
+                    }
+
+                    FTP.SetWorkingDirectory(XboxMusicDirectory + tempSong.soundtrackId.ToString("X4"));
 
                     FTP.DeleteFile(tempSong.soundtrackId.ToString("X4") + tempSong.id.ToString("X4") + @".wma");
                 }
@@ -975,7 +1014,12 @@ namespace OGXboxSoundtrackEditor
             }
             try
             {
-                FTP.SetWorkingDirectory("/E/TDATA/fffe0000/music/");
+                if (!MusicWorkingDirectory())
+                {
+                    return;
+                }
+
+                FTP.SetWorkingDirectory(XboxMusicDirectory);
 
                 FTP.UploadBytes(GetDbBytes(), "ST.DB", FtpRemoteExists.Overwrite);
 
@@ -989,7 +1033,7 @@ namespace OGXboxSoundtrackEditor
                 {
                     FTP.CreateDirectory(ftpSoundtrackIds[i]);
 
-                    FTP.SetWorkingDirectory("/E/TDATA/fffe0000/music/" + ftpSoundtrackIds[i]);
+                    FTP.SetWorkingDirectory(XboxMusicDirectory + ftpSoundtrackIds[i]);
 
                     FTP.UploadFile(ftpLocalPaths[i], ftpDestPaths[i], FtpRemoteExists.Overwrite);
 
@@ -1031,13 +1075,14 @@ namespace OGXboxSoundtrackEditor
 
             try
             {
-                if (FTP.DirectoryExists("/E/TDATA/fffe0000/music/"))
-                {
-                    FTP.SetWorkingDirectory("/E/TDATA/fffe0000/music/");
-
-                    //TODO: Using EmptyDirectory and DeleteDirectory only seems to work on XBMC, get it working for other dashboards
-                    FTP.EmptyDirectory("/E/TDATA/fffe0000/music/");
+                if (!MusicWorkingDirectory()) { 
+                    return; 
                 }
+                
+                FTP.SetWorkingDirectory(XboxMusicDirectory);
+
+                //TODO: Using EmptyDirectory and DeleteDirectory only seems to work on XBMC and PrometheOS, get it working for other dashboards
+                FTP.EmptyDirectory(XboxMusicDirectory);
 
                 SetStatus("Deleted soundtracks from Xbox");
             }
