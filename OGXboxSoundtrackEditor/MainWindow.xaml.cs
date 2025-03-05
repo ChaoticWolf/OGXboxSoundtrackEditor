@@ -23,6 +23,7 @@ using System.Threading.Tasks;
 using System.Windows.Threading;
 using System.Runtime.InteropServices.WindowsRuntime;
 using GSF.Annotations;
+using System.Linq;
 
 namespace OGXboxSoundtrackEditor
 {
@@ -113,6 +114,7 @@ namespace OGXboxSoundtrackEditor
             try
             {
                 FTP.Connect();
+
                 var server = FTP.SystemType;
 
                 //Check for Dashlaunch or XeXMenu. Their FTP servers set working directories even if they don't exist, so there's not much of a way to reliably check things
@@ -185,6 +187,10 @@ namespace OGXboxSoundtrackEditor
             {
                 XboxMusicDirectory = "/HDD0-E/TDATA/fffe0000/music/";
             }
+            else if (FTP.DirectoryExists("/E:/"))
+            {
+                XboxMusicDirectory = "/E:/TDATA/fffe0000/music/";
+            }
             //Check if this is an Xbox 360
             else if (FTP.DirectoryExists("/Hdd1/"))
             {
@@ -228,13 +234,15 @@ namespace OGXboxSoundtrackEditor
 
                 FTP.SetWorkingDirectory(XboxMusicDirectory);
 
-                if (!FTP.FileExists("ST.DB"))
+                //Some FTP servers don't support the NLST command sent by FileExists
+                var files = FTP.GetListing(XboxMusicDirectory);
+                if (files.All(file => file.Name != "ST.DB"))
                 {
                     SetStatus("No soundtracks found on Xbox");
                     return;
                 }
 
-                if (!FTP.DownloadBytes(out byte[] DownloadedBytes, XboxMusicDirectory + "ST.DB"))
+                if (!FTP.DownloadBytes(out byte[] DownloadedBytes, "ST.DB"))
                 {
                     SetStatus("Couldn't download soundtrack database");
                     return;
@@ -1032,7 +1040,7 @@ namespace OGXboxSoundtrackEditor
 
                 FTP.SetWorkingDirectory(XboxMusicDirectory);
 
-                FTP.UploadBytes(GetDbBytes(), "ST.DB", FtpRemoteExists.Overwrite);
+                FTP.UploadBytes(GetDbBytes(), "ST.DB", FtpRemoteExists.OverwriteInPlace);
 
                 Dispatcher.Invoke(new Action(() =>
                 {
