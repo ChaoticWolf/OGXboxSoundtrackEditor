@@ -24,6 +24,7 @@ using System.Windows.Threading;
 using System.Runtime.InteropServices.WindowsRuntime;
 using GSF.Annotations;
 using System.Linq;
+using System.ComponentModel;
 
 namespace OGXboxSoundtrackEditor
 {
@@ -50,6 +51,7 @@ namespace OGXboxSoundtrackEditor
         int bitrate;
 
         string XboxMusicDirectory;
+        bool SoundtracksEdited;
 
         List<string> ftpLocalPaths = new List<string>();
         List<string> ftpDestPaths = new List<string>();
@@ -158,6 +160,7 @@ namespace OGXboxSoundtrackEditor
             await Task.Run(() => DeleteTracksFromXbox());
             
             gridMain.IsEnabled = true;
+            mnuSaveToXbox.IsEnabled = true;
 
             if (FTP.IsConnected)
             {
@@ -595,6 +598,7 @@ namespace OGXboxSoundtrackEditor
             SetStatus("Added soundtrack " + title);
 
             blankSoundtrackAdded = true;
+            SoundtracksEdited = true;
         }
 
         private async void btnAddWMA_Click(object sender, RoutedEventArgs e)
@@ -649,7 +653,7 @@ namespace OGXboxSoundtrackEditor
 
                 SetStatus("WMA tracks added");
 
-                UploadDbToXbox();
+                SoundtracksEdited = true;
             }
             catch
             {
@@ -802,7 +806,7 @@ namespace OGXboxSoundtrackEditor
                 FindNextSoundtrackId();
             }
 
-            UploadDbToXbox();
+            SoundtracksEdited = true;
         }
 
         private void btnDeleteSongs_Click(object sender, RoutedEventArgs e)
@@ -876,7 +880,7 @@ namespace OGXboxSoundtrackEditor
             ReorderSongsInGroups(tempSoundtrack);
             FindNextSongId();
 
-            UploadDbToXbox();
+            SoundtracksEdited = true;
         }
 
         
@@ -1085,6 +1089,7 @@ namespace OGXboxSoundtrackEditor
             ftpDestPaths.Clear();
             ftpLocalPaths.Clear();
             ftpSoundtrackIds.Clear();
+            SoundtracksEdited = false;
             return;
         }
 
@@ -1109,6 +1114,8 @@ namespace OGXboxSoundtrackEditor
                 FTP.EmptyDirectory(XboxMusicDirectory);
 
                 SetStatus("Deleted soundtracks from Xbox");
+
+                SoundtracksEdited = false;
             }
             catch (Exception ex)
             {
@@ -1159,9 +1166,9 @@ namespace OGXboxSoundtrackEditor
             sTrack.name = new char[64];
             title.CopyTo(0, sTrack.name, 0, title.Length);
 
-            UploadDbToXbox();
-
             listSoundtracks.Items.Refresh();
+
+            SoundtracksEdited = true;
         }
 
         private bool ContainsSoundtracks()
@@ -1204,9 +1211,9 @@ namespace OGXboxSoundtrackEditor
                 }
             }
 
-            UploadDbToXbox();
-
             listSongs.Items.Refresh();
+
+            SoundtracksEdited = true;
         }
         
         private void mnuBackupFromXbox_Click(object sender, RoutedEventArgs e)
@@ -1513,13 +1520,47 @@ namespace OGXboxSoundtrackEditor
                 }
 
                 SetStatus("MP3 tracks added");
+
+                SoundtracksEdited = true;
             }
             catch
             {
                 SetStatus("Unknown error");
             }
+        }
 
-            UploadDbToXbox();
+        private async void Window_Closing(object sender, CancelEventArgs e)
+        {
+            if (SoundtracksEdited)
+            {
+                MessageBoxResult DialogResult = MessageBox.Show("Do you want to upload your changes to your Xbox?", "Upload Changes?", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+                if (DialogResult == MessageBoxResult.Yes)
+                {
+                    e.Cancel = true;
+
+                    gridMain.IsEnabled = false;
+
+                    await Task.Run(() => UploadDbToXbox());
+
+                    if (FTP.IsConnected)
+                    {
+                        FTP.Disconnect();
+                    }
+
+                    //If this is still true then there was an error on upload, so we'll cancel closing
+                    if (SoundtracksEdited)
+                    {
+                        gridMain.IsEnabled = true;
+                    } else
+                    {
+                        this.Close();
+                    }
+                } 
+                else if (DialogResult == MessageBoxResult.Cancel)
+                {
+                    e.Cancel = true;
+                }
+            }
         }
     }
 }
