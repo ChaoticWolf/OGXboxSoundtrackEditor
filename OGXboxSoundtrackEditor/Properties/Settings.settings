@@ -24,7 +24,7 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="bitrate" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">192000</Value>
+      <Value Profile="(Default)">128000</Value>
     </Setting>
     <Setting Name="MusicDrive" Type="System.String" Scope="User">
       <Value Profile="(Default)">E</Value>

@@ -109,7 +109,7 @@ namespace OGXboxSoundtrackEditor.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("192000")]
+        [global::System.Configuration.DefaultSettingValueAttribute("128000")]
         public int bitrate {
             get {
                 return ((int)(this["bitrate"]));
