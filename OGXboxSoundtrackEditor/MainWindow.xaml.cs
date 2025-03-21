@@ -178,12 +178,18 @@ namespace OGXboxSoundtrackEditor
         {
             var server = FTP.SystemType;
 
-            //Check for Dashlaunch or XeXMenu. Their FTP servers set working directories even if they don't exist, so there's not much of a way to reliably check things
-            if (server.Contains("DLiFTPD") || server.Contains("XeXMenu"))
+            //Check for Dashlaunch or XeXMenu. Their FTP servers set working directories even if they don't exist
+            if (server.Contains("DLiFTPD"))
             {
-                SetStatus("Unsupported FTP server");
-                MessageBox.Show("Sorry, this FTP server is not supported. Please use another dashboard.", "Unsupported FTP server", MessageBoxButton.OK, MessageBoxImage.Error);
-                return false;
+                XboxMusicDirectory = "/Hdd/Compatibility/Xbox1/TDATA/FFFE0000/MUSIC/";
+                FTP.CreateDirectory(XboxMusicDirectory);
+                return true;
+            }
+            if (server.Contains("XeXMenu"))
+            {
+                XboxMusicDirectory = "/Hdd1/Compatibility/Xbox1/TDATA/FFFE0000/MUSIC/";
+                FTP.CreateDirectory(XboxMusicDirectory);
+                return true;
             }
 
             if (FTP.DirectoryExists("/" + MusicDrive + "/"))
