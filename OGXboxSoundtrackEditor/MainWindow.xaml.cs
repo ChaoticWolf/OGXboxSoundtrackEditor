@@ -48,6 +48,9 @@ namespace OGXboxSoundtrackEditor
         string ftpIpAddress;
         string ftpUsername;
         string ftpPassword;
+        int ftpPort;
+        bool ftpActiveMode;
+        string MusicDrive;
         int bitrate;
 
         string XboxMusicDirectory;
@@ -86,6 +89,9 @@ namespace OGXboxSoundtrackEditor
             ftpIpAddress = Properties.Settings.Default.ftpIpAddress;
             ftpUsername = Properties.Settings.Default.ftpUsername;
             ftpPassword = Properties.Settings.Default.ftpPassword;
+            ftpPort = Properties.Settings.Default.ftpPort;
+            ftpActiveMode = Properties.Settings.Default.ActiveMode;
+            MusicDrive = Properties.Settings.Default.MusicDrive;
             bitrate = Properties.Settings.Default.bitrate;
         }
 
@@ -94,21 +100,21 @@ namespace OGXboxSoundtrackEditor
             //If the user hasn't set an IP or output directory, prompt to set one
             if (string.IsNullOrEmpty(ftpIpAddress))
             {
-                MessageBoxResult DialogResult = MessageBox.Show("No FTP IP Address set in settings. Do you want to configure an IP Address?", "No FTP IP Set", MessageBoxButton.YesNo, MessageBoxImage.Information);
-                if (DialogResult == MessageBoxResult.Yes)
+                UserSettings Settings = new UserSettings();
+                if (Settings.ShowDialog() != true)
                 {
-                    UserSettings Settings = new UserSettings();
-                    if (Settings.ShowDialog() != true)
-                    {
-                        return false;
-                    }
+                    return false;
                 }
             }
 
             FTP = new FtpClient();
             FTP.Host = ftpIpAddress;
             FTP.Credentials = new NetworkCredential(ftpUsername, ftpPassword);
-            FTP.Port = 21; //TODO: Allow this to be user configurable
+            FTP.Port = ftpPort;
+            if (ftpActiveMode)
+            {
+                FTP.Config.DataConnectionType = FtpDataConnectionType.PORT;
+            }
 
             //Connect to the Xbox
             SetStatus("Connecting to Xbox " + ftpIpAddress + "...");
@@ -180,24 +186,18 @@ namespace OGXboxSoundtrackEditor
                 return false;
             }
 
-            if (FTP.DirectoryExists("/E/"))
+            if (FTP.DirectoryExists("/" + MusicDrive + "/"))
             {
-                XboxMusicDirectory = "/E/TDATA/fffe0000/music/";
-
-                //This is probably EvolutionX which requires an active mode connection
-                if (server == "UNIX Type: L8")
-                {
-                    FTP.Config.DataConnectionType = FtpDataConnectionType.PORT;
-                }
+                XboxMusicDirectory = "/" + MusicDrive + "/TDATA/fffe0000/music/";
             }
             //Check for PrometheOS
-            else if (FTP.DirectoryExists("/HDD0-E/"))
+            else if (FTP.DirectoryExists("/HDD0-" + MusicDrive + "/"))
             {
-                XboxMusicDirectory = "/HDD0-E/TDATA/fffe0000/music/";
+                XboxMusicDirectory = "/HDD0-" + MusicDrive + "/TDATA/fffe0000/music/";
             }
-            else if (FTP.DirectoryExists("/E:/"))
+            else if (FTP.DirectoryExists("/" + MusicDrive + ":/"))
             {
-                XboxMusicDirectory = "/E:/TDATA/fffe0000/music/";
+                XboxMusicDirectory = "/" + MusicDrive + ":/TDATA/fffe0000/music/";
             }
             //Check if this is an Xbox 360
             else if (FTP.DirectoryExists("/Hdd1/"))

@@ -12,7 +12,7 @@ namespace OGXboxSoundtrackEditor.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.4.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.11.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -73,6 +73,30 @@ namespace OGXboxSoundtrackEditor.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("21")]
+        public int ftpPort {
+            get {
+                return ((int)(this["ftpPort"]));
+            }
+            set {
+                this["ftpPort"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ActiveMode {
+            get {
+                return ((bool)(this["ActiveMode"]));
+            }
+            set {
+                this["ActiveMode"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string logStrings {
             get {
@@ -92,6 +116,18 @@ namespace OGXboxSoundtrackEditor.Properties {
             }
             set {
                 this["bitrate"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("E")]
+        public string MusicDrive {
+            get {
+                return ((string)(this["MusicDrive"]));
+            }
+            set {
+                this["MusicDrive"] = value;
             }
         }
     }

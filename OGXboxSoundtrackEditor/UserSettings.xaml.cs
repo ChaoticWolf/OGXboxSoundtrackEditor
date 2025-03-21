@@ -15,31 +15,34 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using NumericUpDownLib;
 
 namespace OGXboxSoundtrackEditor
 {
     public partial class UserSettings : Window
     {
-        public string outputFolder;
-        public string ftpIpAddress;
-        public string ftpUsername;
-        public string ftpPassword;
-        public int bitrate;
-
         public UserSettings()
         {
             InitializeComponent();
 
-            outputFolder = Properties.Settings.Default.outputFolder;
-            ftpIpAddress = Properties.Settings.Default.ftpIpAddress;
-            ftpUsername = Properties.Settings.Default.ftpUsername;
-            ftpPassword = Properties.Settings.Default.ftpPassword;
-            bitrate = Properties.Settings.Default.bitrate;
+            string outputFolder = Properties.Settings.Default.outputFolder;
+            string ftpIpAddress = Properties.Settings.Default.ftpIpAddress;
+            string ftpUsername = Properties.Settings.Default.ftpUsername;
+            string ftpPassword = Properties.Settings.Default.ftpPassword;
+            int ftpPort = Properties.Settings.Default.ftpPort;
+            bool ftpActiveMode = Properties.Settings.Default.ActiveMode;
+            int bitrate = Properties.Settings.Default.bitrate;
+            string MusicDrive = Properties.Settings.Default.MusicDrive;
+
             txtOutputDirectory.Text = outputFolder;
             txtIpAddress.Text = ftpIpAddress;
             txtUsername.Text = ftpUsername;
             txtPassword.Text = ftpPassword;
-
+            intPort.Value = ftpPort;
+            if (ftpActiveMode)
+            {
+                cbActiveMode.IsChecked = true;
+            }
             if (bitrate == 96000)
             {
                 cboBitrate.SelectedIndex = 0;
@@ -59,6 +62,18 @@ namespace OGXboxSoundtrackEditor
             else if (bitrate == 320000)
             {
                 cboBitrate.SelectedIndex = 4;
+            }
+            if (MusicDrive == "E")
+            {
+                cboMusicDrive.SelectedIndex = 0;
+            }
+            else if (MusicDrive == "F")
+            {
+                cboMusicDrive.SelectedIndex = 1;
+            }
+            else if (MusicDrive == "G")
+            {
+                cboMusicDrive.SelectedIndex = 2;
             }
         }
 
@@ -86,7 +101,15 @@ namespace OGXboxSoundtrackEditor
             Properties.Settings.Default.ftpIpAddress = txtIpAddress.Text.Trim();
             Properties.Settings.Default.ftpUsername = txtUsername.Text;
             Properties.Settings.Default.ftpPassword = txtPassword.Text;
-
+            Properties.Settings.Default.ftpPort = intPort.Value;
+            if (cbActiveMode.IsChecked == true)
+            {
+                Properties.Settings.Default.ActiveMode = true;
+            }
+            else
+            {
+                Properties.Settings.Default.ActiveMode = false;
+            }
             if (cboBitrate.SelectedIndex == 0)
             {
                 Properties.Settings.Default.bitrate = 96000;
@@ -107,6 +130,18 @@ namespace OGXboxSoundtrackEditor
             {
                 Properties.Settings.Default.bitrate = 320000;
             }
+            if (cboMusicDrive.SelectedIndex == 0)
+            {
+                Properties.Settings.Default.MusicDrive = "E";
+            }
+            else if (cboMusicDrive.SelectedIndex == 1)
+            {
+                Properties.Settings.Default.MusicDrive = "F";
+            }
+            else if (cboMusicDrive.SelectedIndex == 2)
+            {
+                Properties.Settings.Default.MusicDrive = "G";
+            }
 
             Properties.Settings.Default.Save();
             
@@ -119,6 +154,18 @@ namespace OGXboxSoundtrackEditor
             if (fDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 txtOutputDirectory.Text = fDialog.SelectedPath;
+            }
+        }
+
+        private void txtIpAddress_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(txtIpAddress.Text))
+            {
+                btnOK.IsEnabled = true;
+            }
+            else
+            {
+                btnOK.IsEnabled = false;
             }
         }
     }
