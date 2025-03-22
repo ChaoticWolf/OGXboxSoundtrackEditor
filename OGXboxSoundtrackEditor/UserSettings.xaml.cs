@@ -97,6 +97,15 @@ namespace OGXboxSoundtrackEditor
                 return;
             }
 
+            if (cboBitrate.SelectedIndex == 2 || cboBitrate.SelectedIndex == 3 || cboBitrate.SelectedIndex == 4)
+            {
+                MessageBoxResult DialogResult = System.Windows.MessageBox.Show("Please note that some games may have issues playing songs that are more than 128 kbps. Continue?", "Higher Bitrate", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (DialogResult == MessageBoxResult.No)
+                {
+                    return;
+                }
+            }
+
             Properties.Settings.Default.outputFolder = txtOutputDirectory.Text;
             Properties.Settings.Default.ftpIpAddress = txtIpAddress.Text.Trim();
             Properties.Settings.Default.ftpUsername = txtUsername.Text;
