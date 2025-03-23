@@ -97,14 +97,26 @@ namespace OGXboxSoundtrackEditor
 
         private bool ConnectToXbox()
         {
-            //If the user hasn't set an IP or output directory, prompt to set one
+            //If the user hasn't set an IP, prompt to set one
             if (string.IsNullOrEmpty(ftpIpAddress))
             {
-                UserSettings Settings = new UserSettings();
-                if (Settings.ShowDialog() != true)
+                bool IPSet = Dispatcher.Invoke(new Func<bool>(() =>
+                {
+                    UserSettings Settings = new UserSettings();
+                    if (Settings.ShowDialog() != true)
+                    {
+                        return false;
+                    }
+
+                    return true;
+                }));
+
+                if (!IPSet)
                 {
                     return false;
                 }
+
+                LoadSettings();
             }
 
             FTP = new FtpClient();
