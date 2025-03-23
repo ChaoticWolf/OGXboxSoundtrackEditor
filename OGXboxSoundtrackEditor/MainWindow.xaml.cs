@@ -683,13 +683,22 @@ namespace OGXboxSoundtrackEditor
 
             if (title.Length > 32)
             {
-                TitleInput TitleInput = new TitleInput("Song name " + mediainfo.name + " is too long. Please enter a new one.", "Edit Song Title", 32);
-                if (TitleInput.ShowDialog() != true)
+                bool NewTitle = Dispatcher.Invoke(new Func<bool>(() =>
+                {
+                    TitleInput TitleInput = new TitleInput("Song name \"" + mediainfo.name + "\" is too long. Please enter a new one.", "Edit Song Title", 32);
+                    if (TitleInput.ShowDialog() != true)
+                    {
+                        return false;
+                    }
+
+                    title = TitleInput.TrackTitle;
+                    return true;
+                }));
+
+                if (!NewTitle)
                 {
                     return;
                 }
-                
-                title = TitleInput.TrackTitle;
             }
 
             title.CopyTo(0, songTitle, 0, title.Length);
