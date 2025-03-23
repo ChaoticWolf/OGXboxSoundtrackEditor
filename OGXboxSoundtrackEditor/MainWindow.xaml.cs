@@ -134,7 +134,8 @@ namespace OGXboxSoundtrackEditor
                 SetStatus("Could not connect to Xbox");
                 MessageBox.Show("Could not connect to the Xbox.\n" + ex.Message, "Connection Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
+            
+            FTP.Disconnect();
             return false;
         }
 
@@ -167,11 +168,6 @@ namespace OGXboxSoundtrackEditor
             
             gridMain.IsEnabled = true;
             mnuSaveToXbox.IsEnabled = true;
-
-            if (FTP.IsConnected)
-            {
-                FTP.Disconnect();
-            }
         }
 
         private bool MusicWorkingDirectory()
@@ -214,6 +210,7 @@ namespace OGXboxSoundtrackEditor
             {
                 SetStatus("Could not detect Xbox");
                 MessageBox.Show("Could not determine if the FTP server is an Xbox.", "Xbox Not Detected", MessageBoxButton.OK, MessageBoxImage.Error);
+                FTP.Disconnect();
                 return false;
             }
 
@@ -223,6 +220,7 @@ namespace OGXboxSoundtrackEditor
                 if (!FTP.CreateDirectory(XboxMusicDirectory))
                 {
                     SetStatus("Couldn't create music directory on Xbox");
+                    FTP.Disconnect();
                     return false;
                 }
             }
@@ -253,18 +251,21 @@ namespace OGXboxSoundtrackEditor
                 if (files.All(file => file.Name != "ST.DB"))
                 {
                     SetStatus("No soundtracks found on Xbox");
+                    FTP.Disconnect();
                     return;
                 }
 
                 if (!FTP.DownloadBytes(out byte[] DownloadedBytes, "ST.DB"))
                 {
                     SetStatus("Couldn't download soundtrack database");
+                    FTP.Disconnect();
                     return;
                 }
 
                 if (DownloadedBytes.Length == 0)
                 {
                     SetStatus("No soundtracks in database");
+                    FTP.Disconnect();
                     return;
                 }
 
@@ -386,13 +387,13 @@ namespace OGXboxSoundtrackEditor
             {
                 SetStatus("Couldn't retrieve soundtracks");
                 MessageBox.Show("Couldn't retrieve soundtracks.\n" + ex.Message, "Couldn't Retrieve Soundtracks", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
             }
             catch
             {
                 SetStatus("Unknown error");
-                return;
             }
+
+            FTP.Disconnect();
         }
 
         private void mnuSettings_Click(object sender, RoutedEventArgs e)
@@ -869,6 +870,8 @@ namespace OGXboxSoundtrackEditor
                     FTP.SetWorkingDirectory(XboxMusicDirectory + tempSong.soundtrackId.ToString("X4"));
 
                     FTP.DeleteFile(tempSong.soundtrackId.ToString("X4") + tempSong.id.ToString("X4") + @".wma");
+
+                    FTP.Disconnect();
                 }
 
                 tempSoundtrack.numSongs--;
@@ -1041,6 +1044,7 @@ namespace OGXboxSoundtrackEditor
             {
                 return;
             }
+
             try
             {
                 if (!MusicWorkingDirectory())
@@ -1087,6 +1091,8 @@ namespace OGXboxSoundtrackEditor
                 }));
             }
 
+            FTP.Disconnect();
+
             ftpDestPaths.Clear();
             ftpLocalPaths.Clear();
             ftpSoundtrackIds.Clear();
@@ -1122,6 +1128,8 @@ namespace OGXboxSoundtrackEditor
             {
                 SetStatus("Critical Error");
             }
+            
+            FTP.Disconnect();
         }
 
         private async void mnuOpenDbFromXbox_Click(object sender, RoutedEventArgs e)
@@ -1131,11 +1139,6 @@ namespace OGXboxSoundtrackEditor
             await Task.Run(() => OpenDbFromXbox());
 
             gridMain.IsEnabled = true;
-
-            if (FTP.IsConnected)
-            {
-                FTP.Disconnect();
-            }
         }
 
         private async void mnuSaveToXbox_Click(object sender, RoutedEventArgs e)
@@ -1145,11 +1148,6 @@ namespace OGXboxSoundtrackEditor
             await Task.Run(() => UploadDbToXbox());
 
             gridMain.IsEnabled = true;
-
-            if (FTP.IsConnected)
-            {
-                FTP.Disconnect();
-            }
         }
 
         private void btnRenameSoundtrack_Click(object sender, RoutedEventArgs e)
@@ -1542,11 +1540,6 @@ namespace OGXboxSoundtrackEditor
                     gridMain.IsEnabled = false;
 
                     await Task.Run(() => UploadDbToXbox());
-
-                    if (FTP.IsConnected)
-                    {
-                        FTP.Disconnect();
-                    }
 
                     //If this is still true then there was an error on upload, so we'll cancel closing
                     if (SoundtracksEdited)
