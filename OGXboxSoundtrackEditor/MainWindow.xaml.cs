@@ -623,11 +623,6 @@ namespace OGXboxSoundtrackEditor
             await Task.Run(() => AddWMAFiles(oDialog.FileNames));
 
             gridMain.IsEnabled = true;
-
-            if (FTP.IsConnected)
-            {
-                FTP.Disconnect();
-            }
         }
 
         private void AddWMAFiles(object paths)
