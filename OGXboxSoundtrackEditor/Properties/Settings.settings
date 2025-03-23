@@ -20,9 +20,6 @@
     <Setting Name="ActiveMode" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="logStrings" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
     <Setting Name="bitrate" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">128000</Value>
     </Setting>
