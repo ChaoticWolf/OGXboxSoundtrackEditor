@@ -187,36 +187,38 @@ namespace OGXboxSoundtrackEditor
             var server = FTP.SystemType;
 
             //Check for Dashlaunch or XeXMenu. Their FTP servers set working directories even if they don't exist
-            if (server.Contains("DLiFTPD"))
+            if (server.Contains("DLiFTPD") || server.Contains("XeXMenu"))
             {
-                XboxMusicDirectory = "/Hdd/Compatibility/Xbox1/TDATA/FFFE0000/MUSIC/";
-                FTP.CreateDirectory(XboxMusicDirectory);
-                return true;
-            }
-            if (server.Contains("XeXMenu"))
-            {
-                XboxMusicDirectory = "/Hdd1/Compatibility/Xbox1/TDATA/FFFE0000/MUSIC/";
+                if (server.Contains("DLiFTPD"))
+                {
+                    XboxMusicDirectory = "/Hdd/Compatibility/Xbox1/TDATA/FFFE0000/MUSIC/";
+                }
+                else
+                {
+                    XboxMusicDirectory = "/Hdd1/Compatibility/Xbox1/TDATA/FFFE0000/MUSIC/";
+                }
+                
                 FTP.CreateDirectory(XboxMusicDirectory);
                 return true;
             }
 
-            if (FTP.DirectoryExists("/" + MusicDrive + "/"))
+            if (FTP.DirectoryExists($"/{MusicDrive}/"))
             {
-                XboxMusicDirectory = "/" + MusicDrive + "/TDATA/fffe0000/music/";
+                XboxMusicDirectory = $"/{MusicDrive}/TDATA/fffe0000/music/";
             }
             //Check for PrometheOS
-            else if (FTP.DirectoryExists("/HDD0-" + MusicDrive + "/"))
+            else if (FTP.DirectoryExists($"/HDD0-{MusicDrive}/"))
             {
-                XboxMusicDirectory = "/HDD0-" + MusicDrive + "/TDATA/fffe0000/music/";
+                XboxMusicDirectory = $"/HDD0-{MusicDrive}/TDATA/fffe0000/music/";
             }
-            else if (FTP.DirectoryExists("/" + MusicDrive + ":/"))
+            else if (FTP.DirectoryExists($"/{MusicDrive}:/"))
             {
-                XboxMusicDirectory = "/" + MusicDrive + ":/TDATA/fffe0000/music/";
+                XboxMusicDirectory = $"/{MusicDrive}:/TDATA/fffe0000/music/";
             }
             //Check if this is an Xbox 360
             else if (FTP.DirectoryExists("/Hdd1/"))
             {
-                XboxMusicDirectory = "/Hdd1/Compatibility/Xbox1/TDATA/FFFE0000/MUSIC/";
+                XboxMusicDirectory = $"/Hdd1/Compatibility/Xbox1/TDATA/FFFE0000/MUSIC/";
             }
             else
             {
