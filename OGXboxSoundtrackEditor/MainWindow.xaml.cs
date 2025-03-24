@@ -218,7 +218,7 @@ namespace OGXboxSoundtrackEditor
             //Check if this is an Xbox 360
             else if (FTP.DirectoryExists("/Hdd1/"))
             {
-                XboxMusicDirectory = $"/Hdd1/Compatibility/Xbox1/TDATA/FFFE0000/MUSIC/";
+                XboxMusicDirectory = "/Hdd1/Compatibility/Xbox1/TDATA/FFFE0000/MUSIC/";
             }
             else
             {
@@ -774,44 +774,6 @@ namespace OGXboxSoundtrackEditor
         {
             IWMPMedia mediainfo = wmp.newMedia(path);
             return (int)(mediainfo.duration * 1000);
-        }
-
-        private char[] GetSongTitle(string path)
-        {
-            char[] titleChars = new char[32];
-            IWMPMedia mediainfo = wmp.newMedia(path);
-            string title = mediainfo.name.Trim();
-
-            if (title.Length > 32)
-            {
-                bool validTitle = false;
-                while (!validTitle)
-                {
-                    title = Interaction.InputBox("Song name " + mediainfo.name + " is too long. Please enter a new one.", "Song Title", "", -1, -1);
-
-                    if (string.IsNullOrEmpty(title))
-                    {
-                        MessageBox.Show("Title cannot be blank.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
-                    else if (title.Length > 32)
-                    {
-                        MessageBox.Show("Title cannot be longer than 32 characters.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
-                    else
-                    {
-                        validTitle = true;
-                    }
-                }
-            }
-
-            title.CopyTo(0, titleChars, 0, title.Length);
-            return titleChars;
-        }
-
-        private string GetSongTitleString(string path)
-        {
-            IWMPMedia mediainfo = wmp.newMedia(path);
-            return mediainfo.name;
         }
 
         private void btnDeleteSoundtrack_Click(object sender, RoutedEventArgs e)
