@@ -59,8 +59,9 @@
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
                     
-                    <Button x:Name="btnAddMP3" Padding="5" Margin="10,10,10,0" Click="btnAddMP3_Click" IsEnabled="False">Add .MP3</Button>
-                    <Button x:Name="btnAddWMA" Height="30" Padding="5" Margin="0,10,10,0" Click="btnAddWMA_Click" IsEnabled="False">Add .WMA</Button>
+                    <Button x:Name="btnAddMP3" Padding="5" Margin="10,10,10,0" Click="btnAddMP3_Click" IsEnabled="False">Add MP3</Button>
+                    <Button x:Name="btnAddWMA" Height="30" Padding="5" Margin="0,10,10,0" Click="btnAddWMA_Click" IsEnabled="False">Add WMA</Button>
+                    <Button x:Name="btnAddWAV" Height="30" Padding="5" Margin="0,10,10,0" Click="btnAddWAV_Click" IsEnabled="False">Add WAV</Button>
                     <Button x:Name="btnDeleteSongs" Height="30" Padding="5" Margin="0,10,10,0" Click="btnDeleteSongs_Click" IsEnabled="False">Delete</Button>
                     <Button x:Name="btnRenameSong" Height="30" Padding="5" Margin="0,10,10,0" IsEnabled="False" Click="btnRenameSong_Click">Rename</Button>
                 </StackPanel>

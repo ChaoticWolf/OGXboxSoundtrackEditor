@@ -573,6 +573,7 @@ namespace OGXboxSoundtrackEditor
                 btnDeleteSoundtrack.IsEnabled = false;
                 btnAddMP3.IsEnabled = false;
                 btnAddWMA.IsEnabled = false;
+                btnAddWAV.IsEnabled = false;
                 btnRenameSoundtrack.IsEnabled = false;
                 return;
             }
@@ -580,6 +581,7 @@ namespace OGXboxSoundtrackEditor
             {
                 btnAddMP3.IsEnabled = true;
                 btnAddWMA.IsEnabled = true;
+                btnAddWAV.IsEnabled = true;
                 btnRenameSoundtrack.IsEnabled = true;
             }
 
@@ -1513,6 +1515,24 @@ namespace OGXboxSoundtrackEditor
                     e.Cancel = true;
                 }
             }
+        }
+
+        private async void btnAddWAV_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog oDialog = new OpenFileDialog();
+            oDialog.Filter = "WAV Files (*.wav)|*.wav";
+            oDialog.Multiselect = true;
+
+            if (oDialog.ShowDialog() != true)
+            {
+                return;
+            }
+
+            gridMain.IsEnabled = false;
+
+            await Task.Run(() => AddTrackFiles(oDialog.FileNames, "WAV", true));
+
+            gridMain.IsEnabled = true;
         }
     }
 }
