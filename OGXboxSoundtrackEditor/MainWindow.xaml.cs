@@ -574,6 +574,7 @@ namespace OGXboxSoundtrackEditor
                 btnAddMP3.IsEnabled = false;
                 btnAddWMA.IsEnabled = false;
                 btnAddWAV.IsEnabled = false;
+                btnAddFLAC.IsEnabled = false;
                 btnRenameSoundtrack.IsEnabled = false;
                 return;
             }
@@ -582,6 +583,7 @@ namespace OGXboxSoundtrackEditor
                 btnAddMP3.IsEnabled = true;
                 btnAddWMA.IsEnabled = true;
                 btnAddWAV.IsEnabled = true;
+                btnAddFLAC.IsEnabled = true;
                 btnRenameSoundtrack.IsEnabled = true;
             }
 
@@ -1531,6 +1533,24 @@ namespace OGXboxSoundtrackEditor
             gridMain.IsEnabled = false;
 
             await Task.Run(() => AddTrackFiles(oDialog.FileNames, "WAV", true));
+
+            gridMain.IsEnabled = true;
+        }
+
+        private async void btnAddFLAC_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog oDialog = new OpenFileDialog();
+            oDialog.Filter = "FLAC Files (*.flac)|*.flac";
+            oDialog.Multiselect = true;
+
+            if (oDialog.ShowDialog() != true)
+            {
+                return;
+            }
+
+            gridMain.IsEnabled = false;
+
+            await Task.Run(() => AddTrackFiles(oDialog.FileNames, "FLAC", true));
 
             gridMain.IsEnabled = true;
         }
