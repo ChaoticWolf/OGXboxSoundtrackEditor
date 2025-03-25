@@ -635,39 +635,59 @@ namespace OGXboxSoundtrackEditor
 
             gridMain.IsEnabled = false;
 
-            await Task.Run(() => AddWMAFiles(oDialog.FileNames));
+            await Task.Run(() => AddTrackFiles(oDialog.FileNames, "WMA", false));
 
             gridMain.IsEnabled = true;
         }
 
-        private void AddWMAFiles(object paths)
+        private void AddTrackFiles(object paths, string TrackFormat, bool convert)
         {
+            Soundtrack sTrack = null;
+            Dispatcher.Invoke(new Action(() =>
+            {
+                sTrack = (Soundtrack)listSoundtracks.SelectedItem;
+            }));
+
+            int soundtrackId = sTrack.id;
+
+            string[] realPaths = (string[])paths;
+
+            Dispatcher.Invoke(new Action(() =>
+            {
+                progFtpTransfer.Maximum = realPaths.Length;
+            }));
+
             try
             {
-                Soundtrack sTrack = null;
-                Dispatcher.Invoke(new Action(() =>
-                {
-                    sTrack = (Soundtrack)listSoundtracks.SelectedItem;
-                }));
-
-                int soundtrackId = sTrack.id;
-
-                string[] realPaths = (string[])paths;
-
-                SetStatus("Adding WMA tracks...");
-
-                Dispatcher.Invoke(new Action(() =>
-                {
-                    progFtpTransfer.Maximum = realPaths.Length;
-                }));
-
                 foreach (string path in realPaths)
                 {
-                    ftpLocalPaths.Add(path);
-                    AddSongLoop(soundtrackId, path);
-                }
+                    if (!convert)
+                    {
+                        SetStatus("Adding " + TrackFormat + " tracks...");
 
-                SetStatus("WMA tracks added");
+                        ftpLocalPaths.Add(path);
+                    }
+                    else
+                    {
+                        SetStatus("Converting and adding " + TrackFormat + " tracks...");
+
+                        string wmaOutputPath = outputFolder + "\\" + nextSongId.ToString("X4") + ".wma";
+                        using (MediaFoundationReader reader = new MediaFoundationReader(path))
+                        {
+                            MediaFoundationEncoder.EncodeToWma(reader, wmaOutputPath, bitrate);
+                        }
+
+                        ftpLocalPaths.Add(wmaOutputPath);
+                    }
+
+                    AddSongLoop(soundtrackId, path);
+                    Dispatcher.Invoke(new Action(() =>
+                    {
+                        progFtpTransfer.Value++;
+                    }));
+                }
+                
+                SetStatus(TrackFormat + " tracks added");
 
                 SoundtracksEdited = true;
             }
@@ -1461,56 +1481,9 @@ namespace OGXboxSoundtrackEditor
             progFtpTransfer.Value = 0;
             gridMain.IsEnabled = false;
 
-            await Task.Run(() => AddMP3Files(oDialog.FileNames));
+            await Task.Run(() => AddTrackFiles(oDialog.FileNames, "MP3", true));
 
             gridMain.IsEnabled = true;
-        }
-
-        private void AddMP3Files(object paths)
-        {
-            Soundtrack sTrack = null;
-            Dispatcher.Invoke(new Action(() =>
-            {
-                sTrack = (Soundtrack)listSoundtracks.SelectedItem;
-            }));
-            
-            int soundtrackId = sTrack.id;
-
-            string[] realPaths = (string[])paths;
-
-            SetStatus("Converting MP3 tracks...");
-            
-            Dispatcher.Invoke(new Action(() =>
-            {
-                progFtpTransfer.Maximum = realPaths.Length;
-            }));
-
-            try
-            {
-                foreach (string path in realPaths)
-                {
-                    string wmaOutputPath = outputFolder + "\\" + nextSongId.ToString("X4") + ".wma";
-                    using (MediaFoundationReader reader = new MediaFoundationReader(path))
-                    {
-                        MediaFoundationEncoder.EncodeToWma(reader, wmaOutputPath, bitrate);
-                    }
-
-                    ftpLocalPaths.Add(wmaOutputPath);
-                    AddSongLoop(soundtrackId, path);
-                    Dispatcher.Invoke(new Action(() =>
-                    {
-                        progFtpTransfer.Value++;
-                    }));
-                }
-
-                SetStatus("MP3 tracks added");
-
-                SoundtracksEdited = true;
-            }
-            catch
-            {
-                SetStatus("Unknown error");
-            }
         }
 
         private async void Window_Closing(object sender, CancelEventArgs e)
