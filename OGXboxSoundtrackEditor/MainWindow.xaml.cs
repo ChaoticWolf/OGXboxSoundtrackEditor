@@ -184,6 +184,7 @@ namespace OGXboxSoundtrackEditor
 
         private bool MusicWorkingDirectory()
         {
+            XboxMusicDirectory = "";
             var server = FTP.SystemType;
 
             //Check for Dashlaunch or XeXMenu. Their FTP servers set working directories even if they don't exist
@@ -202,25 +203,31 @@ namespace OGXboxSoundtrackEditor
                 return true;
             }
 
-            if (FTP.DirectoryExists($"/{MusicDrive}/"))
+            string[] XboxDrives =
             {
-                XboxMusicDirectory = $"/{MusicDrive}/TDATA/fffe0000/music/";
-            }
-            //Check for PrometheOS
-            else if (FTP.DirectoryExists($"/HDD0-{MusicDrive}/"))
+                MusicDrive, //E - Used by most dashboards
+                $"HDD0-{MusicDrive}", //PrometheOS
+                $"{MusicDrive}:", //E: - Used by some dashboards like Avalaunch
+                "Hdd1" //Xbox 360
+            };
+
+            foreach (string XboxDrive in XboxDrives)
             {
-                XboxMusicDirectory = $"/HDD0-{MusicDrive}/TDATA/fffe0000/music/";
+                if (FTP.DirectoryExists($"/{XboxDrive}/"))
+                {
+                    if (XboxDrive != "Hdd1")
+                    {
+                        XboxMusicDirectory = $"/{XboxDrive}/TDATA/fffe0000/music/";
+                    }
+                    else
+                    {
+                        XboxMusicDirectory = "/Hdd1/Compatibility/Xbox1/TDATA/FFFE0000/MUSIC/";
+                    }
+                    break;
+                }
             }
-            else if (FTP.DirectoryExists($"/{MusicDrive}:/"))
-            {
-                XboxMusicDirectory = $"/{MusicDrive}:/TDATA/fffe0000/music/";
-            }
-            //Check if this is an Xbox 360
-            else if (FTP.DirectoryExists("/Hdd1/"))
-            {
-                XboxMusicDirectory = "/Hdd1/Compatibility/Xbox1/TDATA/FFFE0000/MUSIC/";
-            }
-            else
+
+            if (String.IsNullOrEmpty(XboxMusicDirectory))
             {
                 SetStatus("Could not detect Xbox");
                 MessageBox.Show("Could not determine if the FTP server is an Xbox.", "Xbox Not Detected", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -1077,7 +1084,7 @@ namespace OGXboxSoundtrackEditor
 
                     FTP.SetWorkingDirectory(XboxMusicDirectory + ftpSoundtrackIds[i]);
 
-                    FTP.UploadFile(ftpLocalPaths[i], ftpDestPaths[i], FtpRemoteExists.Overwrite);
+                    FTP.UploadFile(ftpLocalPaths[i], ftpDestPaths[i], FtpRemoteExists.OverwriteInPlace);
 
                     Dispatcher.Invoke(new Action(() =>
                     {
