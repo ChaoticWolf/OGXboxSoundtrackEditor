@@ -8,3 +8,6 @@ OG Xbox Soundtrack Editor is an application to manipulate the music stored on th
 * Backup music database to .ZIP file
 * Restore music to Xbox from .ZIP file
 * Xbox 360 backwards compatibility support
+
+## Requirements
+* Original Xbox or Xbox 360 with a dashboard running FTP
