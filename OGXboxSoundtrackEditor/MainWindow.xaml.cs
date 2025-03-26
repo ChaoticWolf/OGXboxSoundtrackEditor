@@ -1053,6 +1053,8 @@ namespace OGXboxSoundtrackEditor
                 return;
             }
 
+            SetStatus("Uploading to Xbox...");
+
             try
             {
                 if (!MusicWorkingDirectory())
