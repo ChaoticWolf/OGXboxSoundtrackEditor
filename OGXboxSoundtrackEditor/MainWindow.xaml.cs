@@ -821,12 +821,6 @@ namespace OGXboxSoundtrackEditor
 
         private void btnDeleteSongs_Click(object sender, RoutedEventArgs e)
         {
-            if (listSongs.SelectedItems.Count == 0)
-            {
-                MessageBox.Show("No songs selected.  Please try again.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
             Soundtrack tempSoundtrack = (Soundtrack)listSoundtracks.SelectedItem;
 
             if (MessageBox.Show("Are you sure you want to delete the selected songs from soundtrack " + tempSoundtrack.Name + "?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
@@ -885,7 +879,7 @@ namespace OGXboxSoundtrackEditor
                 tempSoundtrack.numSongs--;
             }
 
-            txtStatus.Text = "Songs Deleted Successfully";
+            SetStatus("Songs deleted");
 
             tempSoundtrack.RefreshAllSongNames();
             listSongs.ItemsSource = tempSoundtrack.allSongs;
