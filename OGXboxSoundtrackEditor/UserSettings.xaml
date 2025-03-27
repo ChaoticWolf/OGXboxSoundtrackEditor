@@ -6,7 +6,7 @@
         xmlns:cntrl="clr-namespace:NumericUpDownLib;assembly=NumericUpDownLib"
         xmlns:local="clr-namespace:OGXboxSoundtrackEditor"
         mc:Ignorable="d"
-        Title="User Settings" Height="300" Width="500" ResizeMode="CanMinimize">
+        Title="Settings" Height="300" Width="500" ResizeMode="CanMinimize">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
