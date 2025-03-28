@@ -84,9 +84,9 @@ namespace OGXboxSoundtrackEditor
                 return;
             }
 
-            if (cboBitrate.SelectedIndex == 2 || cboBitrate.SelectedIndex == 3 || cboBitrate.SelectedIndex == 4)
+            if (cboBitrate.SelectedIndex != 1)
             {
-                MessageBoxResult DialogResult = System.Windows.MessageBox.Show("Please note that some games may have issues playing songs that are more than 128 kbps. Continue?", "Higher Bitrate", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                MessageBoxResult DialogResult = System.Windows.MessageBox.Show("Please note that some games may have issues playing songs that are not 128 kbps. Continue?", "Bitrate", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (DialogResult == MessageBoxResult.No)
                 {
                     return;
