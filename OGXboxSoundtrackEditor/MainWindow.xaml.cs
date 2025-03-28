@@ -145,8 +145,8 @@ namespace OGXboxSoundtrackEditor
 
         private async void mnuNew_Click(object sender, RoutedEventArgs e)
         {
-            MessageBoxResult result = MessageBox.Show("This will delete your entire soundtrack database from the Xbox.  Are you sure?", "Delete Soundtrack Database", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (result != MessageBoxResult.Yes)
+            MessageBoxResult DialogResult = MessageBox.Show("This will delete your entire soundtrack database from the Xbox. Are you sure?", "Delete Soundtrack Database", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (DialogResult != MessageBoxResult.Yes)
             {
                 return;
             }
@@ -801,29 +801,25 @@ namespace OGXboxSoundtrackEditor
 
         private void btnDeleteSoundtrack_Click(object sender, RoutedEventArgs e)
         {
-            if (listSoundtracks.SelectedItem == null)
-            {
-                MessageBox.Show("No soundtrack selected.  Please try again.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
             Soundtrack temp = (Soundtrack)listSoundtracks.SelectedItem;
 
-            if (MessageBox.Show("Are you sure you want to delete soundtrack " + temp.Name + "?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            MessageBoxResult DialogResult = MessageBox.Show("Are you sure you want to delete soundtrack " + temp.Name + "?", "Delete Soundtrack", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (DialogResult == MessageBoxResult.Yes)
             {
                 soundtracks.Remove((Soundtrack)listSoundtracks.SelectedItem);
                 FindNextSongId();
                 FindNextSoundtrackId();
-            }
 
-            SoundtracksEdited = true;
+                SoundtracksEdited = true;
+            }
         }
 
         private void btnDeleteSongs_Click(object sender, RoutedEventArgs e)
         {
             Soundtrack tempSoundtrack = (Soundtrack)listSoundtracks.SelectedItem;
 
-            if (MessageBox.Show("Are you sure you want to delete the selected songs from soundtrack " + tempSoundtrack.Name + "?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
+            MessageBoxResult DialogResult = MessageBox.Show("Are you sure you want to delete the selected songs from soundtrack " + tempSoundtrack.Name + "?", "Delete Songs", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (DialogResult != MessageBoxResult.Yes)
             {
                 return;
             }
@@ -1130,7 +1126,7 @@ namespace OGXboxSoundtrackEditor
             }
             catch (Exception ex)
             {
-                SetStatus("Critical Error");
+                SetStatus("Error deleting soundtracks");
             }
             
             FTP.Disconnect();
