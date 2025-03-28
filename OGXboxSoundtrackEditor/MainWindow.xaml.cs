@@ -1,5 +1,4 @@
 ﻿using FluentFTP.Exceptions;
-using Microsoft.VisualBasic;
 using Microsoft.Win32;
 using FluentFTP;
 using NAudio.Wave;
@@ -8,7 +7,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.IO.Compression;
-using System.Net;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
