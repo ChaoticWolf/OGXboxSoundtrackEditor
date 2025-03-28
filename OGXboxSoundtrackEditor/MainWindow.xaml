@@ -84,7 +84,7 @@
         
         <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal"/>
         <StatusBar Grid.Row="3">
-            <TextBlock x:Name="txtStatus" Text="Ready" />
+            <TextBlock x:Name="txtStatus" />
         </StatusBar>
         <ProgressBar x:Name="progFtpTransfer" Grid.Row="3" Grid.Column="1" />
     </Grid>
