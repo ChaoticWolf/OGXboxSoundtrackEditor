@@ -13,4 +13,5 @@ OG Xbox Soundtrack Editor is an application to manipulate the music stored on th
 * Xbox 360 backwards compatibility support
 
 ## Requirements
+* Windows 7 SP1 or newer
 * Original Xbox or Xbox 360 with a dashboard running FTP
