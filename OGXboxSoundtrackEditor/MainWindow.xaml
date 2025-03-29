@@ -86,6 +86,6 @@
         <StatusBar Grid.Row="3">
             <TextBlock x:Name="txtStatus" />
         </StatusBar>
-        <ProgressBar x:Name="progFtpTransfer" Grid.Row="3" Grid.Column="1" />
+        <ProgressBar x:Name="progressBar" Grid.Row="3" Grid.Column="1" />
     </Grid>
 </Window>

@@ -764,7 +764,7 @@ namespace OGXboxSoundtrackEditor
 
                 Dispatcher.Invoke(new Action(() =>
                 {
-                    progFtpTransfer.Maximum = ftpDestPaths.Count;
+                    progressBar.Maximum = ftpDestPaths.Count;
                 }));
 
                 for (int i = 0; i < ftpDestPaths.Count; i++)
@@ -777,7 +777,7 @@ namespace OGXboxSoundtrackEditor
 
                     Dispatcher.Invoke(new Action(() =>
                     {
-                        progFtpTransfer.Value++;
+                        progressBar.Value++;
                     }));
                 }
 
@@ -792,7 +792,7 @@ namespace OGXboxSoundtrackEditor
             {
                 Dispatcher.Invoke(new Action(() =>
                 {
-                    progFtpTransfer.Value = 0;
+                    progressBar.Value = 0;
                 }));
             }
 
@@ -960,8 +960,8 @@ namespace OGXboxSoundtrackEditor
                     using (ZipArchive zip = new ZipArchive(fStream, ZipArchiveMode.Read, true))
                     {
                         Dispatcher.Invoke(new Action(() => {
-                            progFtpTransfer.Maximum = zip.Entries.Count;
-                            progFtpTransfer.Value = 0;
+                            progressBar.Maximum = zip.Entries.Count;
+                            progressBar.Value = 0;
                         }));
                         
                         foreach (ZipArchiveEntry zArchive in zip.Entries)
@@ -987,7 +987,7 @@ namespace OGXboxSoundtrackEditor
                                         return;
                                     }
                                     Dispatcher.Invoke(new Action(() => {
-                                        progFtpTransfer.Value++;
+                                        progressBar.Value++;
                                     }));
                                 }
                                 else
@@ -997,7 +997,7 @@ namespace OGXboxSoundtrackEditor
                                         return;
                                     }
                                     Dispatcher.Invoke(new Action(() => {
-                                        progFtpTransfer.Value++;
+                                        progressBar.Value++;
                                     }));
                                 }
                             }
@@ -1022,7 +1022,7 @@ namespace OGXboxSoundtrackEditor
                 logLines = ftpClient.ftpLogEntries;
                 Dispatcher.Invoke(new Action(() =>
                 {
-                    progFtpTransfer.Value = 0;
+                    progressBar.Value = 0;
                     gridMain.IsEnabled = true;
                 }));
             }
@@ -1078,7 +1078,7 @@ namespace OGXboxSoundtrackEditor
 
             Dispatcher.Invoke(new Action(() =>
             {
-                progFtpTransfer.Maximum = realPaths.Length;
+                progressBar.Maximum = realPaths.Length;
             }));
 
             try
@@ -1107,7 +1107,7 @@ namespace OGXboxSoundtrackEditor
                     AddSongLoop(soundtrackId, path);
                     Dispatcher.Invoke(new Action(() =>
                     {
-                        progFtpTransfer.Value++;
+                        progressBar.Value++;
                     }));
                 }
 
@@ -1122,7 +1122,7 @@ namespace OGXboxSoundtrackEditor
 
             Dispatcher.Invoke(new Action(() =>
             {
-                progFtpTransfer.Value = 0;
+                progressBar.Value = 0;
             }));
         }
 
