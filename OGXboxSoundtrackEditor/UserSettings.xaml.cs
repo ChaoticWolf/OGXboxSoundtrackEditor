@@ -93,6 +93,15 @@ namespace OGXboxSoundtrackEditor
                 }
             }
 
+            if (cboMusicDrive.SelectedIndex > 0)
+            {
+                MessageBoxResult DialogResult = System.Windows.MessageBox.Show("Note that you will need to patch your games to read music from the F or G partition on your Xbox. Continue?", "Music Partition", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (DialogResult == MessageBoxResult.No)
+                {
+                    return;
+                }
+            }
+
             Properties.Settings.Default.outputFolder = txtOutputDirectory.Text;
             Properties.Settings.Default.ftpIpAddress = txtIpAddress.Text.Trim();
             Properties.Settings.Default.ftpUsername = txtUsername.Text;
