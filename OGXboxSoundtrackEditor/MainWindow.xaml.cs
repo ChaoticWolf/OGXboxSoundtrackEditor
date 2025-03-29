@@ -764,7 +764,6 @@ namespace OGXboxSoundtrackEditor
 
                 Dispatcher.Invoke(new Action(() =>
                 {
-                    progFtpTransfer.Value = 0;
                     progFtpTransfer.Maximum = ftpDestPaths.Count;
                 }));
 
@@ -1120,6 +1119,11 @@ namespace OGXboxSoundtrackEditor
             {
                 SetStatus("Unknown error");
             }
+
+            Dispatcher.Invoke(new Action(() =>
+            {
+                progFtpTransfer.Value = 0;
+            }));
         }
 
         private void AddSongLoop(int soundtrackId, string path)
@@ -1367,7 +1371,6 @@ namespace OGXboxSoundtrackEditor
                 return;
             }
 
-            progFtpTransfer.Value = 0;
             gridMain.IsEnabled = false;
 
             await Task.Run(() => AddTrackFiles(oDialog.FileNames, "MP3", true));
