@@ -26,60 +26,60 @@ namespace OGXboxSoundtrackEditor.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string outputFolder {
+        public string OutputFolder {
             get {
-                return ((string)(this["outputFolder"]));
+                return ((string)(this["OutputFolder"]));
             }
             set {
-                this["outputFolder"] = value;
+                this["OutputFolder"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string ftpIpAddress {
+        public string IPAddress {
             get {
-                return ((string)(this["ftpIpAddress"]));
+                return ((string)(this["IPAddress"]));
             }
             set {
-                this["ftpIpAddress"] = value;
+                this["IPAddress"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string ftpUsername {
+        public string Username {
             get {
-                return ((string)(this["ftpUsername"]));
+                return ((string)(this["Username"]));
             }
             set {
-                this["ftpUsername"] = value;
+                this["Username"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string ftpPassword {
+        public string Password {
             get {
-                return ((string)(this["ftpPassword"]));
+                return ((string)(this["Password"]));
             }
             set {
-                this["ftpPassword"] = value;
+                this["Password"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("21")]
-        public int ftpPort {
+        public int Port {
             get {
-                return ((int)(this["ftpPort"]));
+                return ((int)(this["Port"]));
             }
             set {
-                this["ftpPort"] = value;
+                this["Port"] = value;
             }
         }
         

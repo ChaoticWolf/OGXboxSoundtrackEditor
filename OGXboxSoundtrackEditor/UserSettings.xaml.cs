@@ -12,21 +12,21 @@ namespace OGXboxSoundtrackEditor
         {
             InitializeComponent();
 
-            string outputFolder = Properties.Settings.Default.outputFolder;
-            string ftpIpAddress = Properties.Settings.Default.ftpIpAddress;
-            string ftpUsername = Properties.Settings.Default.ftpUsername;
-            string ftpPassword = Properties.Settings.Default.ftpPassword;
-            int ftpPort = Properties.Settings.Default.ftpPort;
-            bool ftpActiveMode = Properties.Settings.Default.ActiveMode;
+            string OutputFolder = Properties.Settings.Default.OutputFolder;
+            string IPAddress = Properties.Settings.Default.IPAddress;
+            string Username = Properties.Settings.Default.Username;
+            string Password = Properties.Settings.Default.Password;
+            int Port = Properties.Settings.Default.Port;
+            bool ActiveMode = Properties.Settings.Default.ActiveMode;
             int bitrate = Properties.Settings.Default.bitrate;
             string MusicDrive = Properties.Settings.Default.MusicDrive;
 
-            txtOutputDirectory.Text = outputFolder;
-            txtIpAddress.Text = ftpIpAddress;
-            txtUsername.Text = ftpUsername;
-            txtPassword.Text = ftpPassword;
-            intPort.Value = ftpPort;
-            if (ftpActiveMode)
+            txtOutputDirectory.Text = OutputFolder;
+            txtIpAddress.Text = IPAddress;
+            txtUsername.Text = Username;
+            txtPassword.Text = Password;
+            intPort.Value = Port;
+            if (ActiveMode)
             {
                 cbActiveMode.IsChecked = true;
             }
@@ -102,11 +102,11 @@ namespace OGXboxSoundtrackEditor
                 }
             }
 
-            Properties.Settings.Default.outputFolder = txtOutputDirectory.Text;
-            Properties.Settings.Default.ftpIpAddress = txtIpAddress.Text.Trim();
-            Properties.Settings.Default.ftpUsername = txtUsername.Text;
-            Properties.Settings.Default.ftpPassword = txtPassword.Text;
-            Properties.Settings.Default.ftpPort = intPort.Value;
+            Properties.Settings.Default.OutputFolder = txtOutputDirectory.Text;
+            Properties.Settings.Default.IPAddress = txtIpAddress.Text.Trim();
+            Properties.Settings.Default.Username = txtUsername.Text;
+            Properties.Settings.Default.Password = txtPassword.Text;
+            Properties.Settings.Default.Port = intPort.Value;
             if (cbActiveMode.IsChecked == true)
             {
                 Properties.Settings.Default.ActiveMode = true;

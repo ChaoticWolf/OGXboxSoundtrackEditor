@@ -2,19 +2,19 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="OGXboxSoundtrackEditor.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="outputFolder" Type="System.String" Scope="User">
+    <Setting Name="OutputFolder" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="ftpIpAddress" Type="System.String" Scope="User">
+    <Setting Name="IPAddress" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="ftpUsername" Type="System.String" Scope="User">
+    <Setting Name="Username" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="ftpPassword" Type="System.String" Scope="User">
+    <Setting Name="Password" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="ftpPort" Type="System.Int32" Scope="User">
+    <Setting Name="Port" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">21</Value>
     </Setting>
     <Setting Name="ActiveMode" Type="System.Boolean" Scope="User">

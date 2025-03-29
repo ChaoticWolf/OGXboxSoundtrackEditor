@@ -34,12 +34,12 @@ namespace OGXboxSoundtrackEditor
         WindowsMediaPlayer wmp = new WindowsMediaPlayer();
 
         // saved settings variables
-        string outputFolder;
-        string ftpIpAddress;
-        string ftpUsername;
-        string ftpPassword;
-        int ftpPort;
-        bool ftpActiveMode;
+        string OutputFolder;
+        string IPAddress;
+        string Username;
+        string Password;
+        int Port;
+        bool ActiveMode;
         string MusicDrive;
         int bitrate;
 
@@ -75,12 +75,12 @@ namespace OGXboxSoundtrackEditor
 
         private void LoadSettings()
         {
-            outputFolder = Properties.Settings.Default.outputFolder;
-            ftpIpAddress = Properties.Settings.Default.ftpIpAddress;
-            ftpUsername = Properties.Settings.Default.ftpUsername;
-            ftpPassword = Properties.Settings.Default.ftpPassword;
-            ftpPort = Properties.Settings.Default.ftpPort;
-            ftpActiveMode = Properties.Settings.Default.ActiveMode;
+            OutputFolder = Properties.Settings.Default.OutputFolder;
+            IPAddress = Properties.Settings.Default.IPAddress;
+            Username = Properties.Settings.Default.Username;
+            Password = Properties.Settings.Default.Password;
+            Port = Properties.Settings.Default.Port;
+            ActiveMode = Properties.Settings.Default.ActiveMode;
             MusicDrive = Properties.Settings.Default.MusicDrive;
             bitrate = Properties.Settings.Default.bitrate;
         }
@@ -95,7 +95,7 @@ namespace OGXboxSoundtrackEditor
         private bool ConnectToXbox()
         {
             //If the user hasn't set an IP, prompt to set one
-            if (string.IsNullOrEmpty(ftpIpAddress))
+            if (string.IsNullOrEmpty(IPAddress))
             {
                 bool IPSet = Dispatcher.Invoke(new Func<bool>(() =>
                 {
@@ -116,14 +116,14 @@ namespace OGXboxSoundtrackEditor
                 LoadSettings();
             }
 
-            FTP = new FtpClient(ftpIpAddress, ftpUsername, ftpPassword, ftpPort);
-            if (ftpActiveMode)
+            FTP = new FtpClient(IPAddress, Username, Password, Port);
+            if (ActiveMode)
             {
                 FTP.Config.DataConnectionType = FtpDataConnectionType.PORT;
             }
 
             //Connect to the Xbox
-            SetStatus("Connecting to Xbox " + ftpIpAddress + "...");
+            SetStatus("Connecting to Xbox " + IPAddress + "...");
 
             try
             {
@@ -823,7 +823,7 @@ namespace OGXboxSoundtrackEditor
                 {
                     using (ZipArchive zip = new ZipArchive(fStream, ZipArchiveMode.Create, true))
                     {
-                        ftpClient = new FtpClient(ftpIpAddress, ftpUsername, ftpPassword);
+                        ftpClient = new FtpClient(IPAddress, Username, Password);
 
                         if (!ftpClient.Connect())
                         {
@@ -935,7 +935,7 @@ namespace OGXboxSoundtrackEditor
         private void UploadBackupToXbox(object zipPath)
         {
             /*
-            ftpClient = new FtpClient(ftpIpAddress, ftpUsername, ftpPassword);
+            ftpClient = new FtpClient(IPAddress, Username, Password);
             try
             {
                 if (!ftpClient.Connect())
@@ -1095,7 +1095,7 @@ namespace OGXboxSoundtrackEditor
                     {
                         SetStatus("Converting and adding " + TrackFormat + " tracks...");
 
-                        string wmaOutputPath = outputFolder + "\\" + nextSongId.ToString("X4") + ".wma";
+                        string wmaOutputPath = OutputFolder + "\\" + nextSongId.ToString("X4") + ".wma";
                         using (MediaFoundationReader reader = new MediaFoundationReader(path))
                         {
                             MediaFoundationEncoder.EncodeToWma(reader, wmaOutputPath, bitrate);
@@ -1356,7 +1356,7 @@ namespace OGXboxSoundtrackEditor
 
         private async void btnAddMP3_Click(object sender, RoutedEventArgs e)
         {
-            if (!Directory.Exists(outputFolder))
+            if (!Directory.Exists(OutputFolder))
             {
                 MessageBox.Show("Invalid output folder configured in Settings.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
