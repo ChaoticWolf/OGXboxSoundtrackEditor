@@ -64,11 +64,6 @@ namespace OGXboxSoundtrackEditor
             }
         }
 
-        private void btnCancel_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {
             //Verify output folder
