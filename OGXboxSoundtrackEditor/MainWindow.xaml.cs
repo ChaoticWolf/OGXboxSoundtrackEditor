@@ -213,6 +213,131 @@ namespace OGXboxSoundtrackEditor
             return true;
         }
 
+        private void NewDb()
+        {
+            // create header
+            magic = 0x00000001;
+            numSoundtracks = 0;
+            nextSoundtrackId = 0;
+            soundtrackIds = new int[100];
+            nextSongId = 0;
+            padding = new byte[96];
+
+            songGroupCount = 0;
+            paddingBetween = 0;
+
+            soundtracks.Clear();
+            listSoundtracks.ItemsSource = soundtracks;
+        }
+
+        private void OpenDb(byte[] bytes)
+        {
+            BinaryReader bReader = new BinaryReader(new MemoryStream(bytes), Encoding.Unicode);
+            magic = bReader.ReadInt32();
+            numSoundtracks = bReader.ReadInt32();
+            nextSoundtrackId = bReader.ReadInt32();
+            for (int i = 0; i < 100; i++)
+            {
+                soundtrackIds[i] = bReader.ReadInt32();
+            }
+            nextSongId = bReader.ReadInt32();
+            for (int i = 0; i < 96; i++)
+            {
+                padding[i] = bReader.ReadByte();
+            }
+
+            for (int i = 0; i < numSoundtracks; i++)
+            {
+                Soundtrack s = new Soundtrack();
+                s.magic = bReader.ReadInt32();
+                s.id = bReader.ReadInt32();
+                s.numSongs = bReader.ReadUInt32();
+                // 12 bytes read
+                for (int a = 0; a < 84; a++)
+                {
+                    s.songGroupIds[a] = bReader.ReadInt32();
+                }
+                // 336 bytes read
+                songGroupCount++;
+                for (int a = 1; a < 84; a++)
+                {
+                    if (s.songGroupIds[a] != 0)
+                    {
+                        songGroupCount++;
+                    }
+                }
+
+                s.totalTimeMilliseconds = bReader.ReadInt32();
+                // 4 bytes read
+                for (int a = 0; a < 64; a++)
+                {
+                    s.name[a] = bReader.ReadChar();
+                }
+                bReader.ReadBytes(32);
+                // 128 bytes read
+
+                soundtracks.Add(s);
+            }
+
+            byte h;
+            do
+            {
+                h = bReader.ReadByte();
+                if (h != 0x73)
+                {
+                    paddingBetween++;
+                }
+            } while (h != 0x73);
+            bReader.ReadBytes(3);
+
+            for (int i = 0; i < songGroupCount; i++)
+            {
+                SongGroup sGroup = new SongGroup();
+                if (i == 0)
+                {
+                    sGroup.magic = 0x00031073;
+                }
+                else
+                {
+                    sGroup.magic = bReader.ReadInt32();
+                }
+                sGroup.soundtrackId = bReader.ReadInt32();
+                sGroup.id = bReader.ReadInt32();
+                sGroup.padding = bReader.ReadInt32();
+                for (int a = 0; a < 6; a++)
+                {
+                    sGroup.songId[a] = bReader.ReadInt16();
+                    bReader.ReadInt16();
+                }
+                for (int a = 0; a < 6; a++)
+                {
+                    sGroup.songTimeMilliseconds[a] = bReader.ReadInt32();
+                }
+                for (int a = 0; a < 6; a++)
+                {
+                    char[] newArray = new char[32];
+                    for (int b = 0; b < 32; b++)
+                    {
+                        newArray[b] = bReader.ReadChar();
+                    }
+                    sGroup.songNames[a] = newArray;
+                }
+                for (int a = 0; a < 64; a++)
+                {
+                    sGroup.paddingChar[a] = bReader.ReadByte();
+                }
+                for (int p = 0; p < soundtracks.Count; p++)
+                {
+                    if (soundtracks[p].id == sGroup.soundtrackId)
+                    {
+                        soundtracks[p].songGroups.Add(sGroup);
+                    }
+                }
+            }
+
+            bReader.Close();
+        }
+
         private int GetDbSize()
         {
             int dbSize = 0;
@@ -531,19 +656,8 @@ namespace OGXboxSoundtrackEditor
                 return;
             }
 
-            // create header
-            magic = 0x00000001;
-            numSoundtracks = 0;
-            nextSoundtrackId = 0;
-            soundtrackIds = new int[100];
-            nextSongId = 0;
-            padding = new byte[96];
+            NewDb();
 
-            songGroupCount = 0;
-            paddingBetween = 0;
-
-            soundtracks.Clear();
-            listSoundtracks.ItemsSource = soundtracks;
             btnAddSoundtrack.IsEnabled = true;
 
             gridMain.IsEnabled = false;
@@ -595,110 +709,7 @@ namespace OGXboxSoundtrackEditor
                     return;
                 }
 
-                BinaryReader bReader = new BinaryReader(new MemoryStream(DownloadedBytes), Encoding.Unicode);
-                magic = bReader.ReadInt32();
-                numSoundtracks = bReader.ReadInt32();
-                nextSoundtrackId = bReader.ReadInt32();
-                for (int i = 0; i < 100; i++)
-                {
-                    soundtrackIds[i] = bReader.ReadInt32();
-                }
-                nextSongId = bReader.ReadInt32();
-                for (int i = 0; i < 96; i++)
-                {
-                    padding[i] = bReader.ReadByte();
-                }
-
-                for (int i = 0; i < numSoundtracks; i++)
-                {
-                    Soundtrack s = new Soundtrack();
-                    s.magic = bReader.ReadInt32();
-                    s.id = bReader.ReadInt32();
-                    s.numSongs = bReader.ReadUInt32();
-                    // 12 bytes read
-                    for (int a = 0; a < 84; a++)
-                    {
-                        s.songGroupIds[a] = bReader.ReadInt32();
-                    }
-                    // 336 bytes read
-                    songGroupCount++;
-                    for (int a = 1; a < 84; a++)
-                    {
-                        if (s.songGroupIds[a] != 0)
-                        {
-                            songGroupCount++;
-                        }
-                    }
-
-                    s.totalTimeMilliseconds = bReader.ReadInt32();
-                    // 4 bytes read
-                    for (int a = 0; a < 64; a++)
-                    {
-                        s.name[a] = bReader.ReadChar();
-                    }
-                    bReader.ReadBytes(32);
-                    // 128 bytes read
-
-                    soundtracks.Add(s);
-                }
-
-                byte h;
-                do
-                {
-                    h = bReader.ReadByte();
-                    if (h != 0x73)
-                    {
-                        paddingBetween++;
-                    }
-                } while (h != 0x73);
-                bReader.ReadBytes(3);
-
-                for (int i = 0; i < songGroupCount; i++)
-                {
-                    SongGroup sGroup = new SongGroup();
-                    if (i == 0)
-                    {
-                        sGroup.magic = 0x00031073;
-                    }
-                    else
-                    {
-                        sGroup.magic = bReader.ReadInt32();
-                    }
-                    sGroup.soundtrackId = bReader.ReadInt32();
-                    sGroup.id = bReader.ReadInt32();
-                    sGroup.padding = bReader.ReadInt32();
-                    for (int a = 0; a < 6; a++)
-                    {
-                        sGroup.songId[a] = bReader.ReadInt16();
-                        bReader.ReadInt16();
-                    }
-                    for (int a = 0; a < 6; a++)
-                    {
-                        sGroup.songTimeMilliseconds[a] = bReader.ReadInt32();
-                    }
-                    for (int a = 0; a < 6; a++)
-                    {
-                        char[] newArray = new char[32];
-                        for (int b = 0; b < 32; b++)
-                        {
-                            newArray[b] = bReader.ReadChar();
-                        }
-                        sGroup.songNames[a] = newArray;
-                    }
-                    for (int a = 0; a < 64; a++)
-                    {
-                        sGroup.paddingChar[a] = bReader.ReadByte();
-                    }
-                    for (int p = 0; p < soundtracks.Count; p++)
-                    {
-                        if (soundtracks[p].id == sGroup.soundtrackId)
-                        {
-                            soundtracks[p].songGroups.Add(sGroup);
-                        }
-                    }
-                }
-
-                bReader.Close();
+                OpenDb(DownloadedBytes);
 
                 Dispatcher.Invoke(new Action(() =>
                 {
@@ -1155,7 +1166,14 @@ namespace OGXboxSoundtrackEditor
                                 soundtracks[b].numSongs++;
                                 Dispatcher.Invoke(new Action(() =>
                                 {
-                                    soundtracks[b].allSongs.Add(new Song { isRemote = false, Name = new string(songTitle).Trim(), TimeMs = GetSongLengthInMs(path), songGroupId = soundtracks[b].songGroups[i].id, soundtrackId = soundtracks[b].id, id = nextSongId });
+                                    soundtracks[b].allSongs.Add(new Song { 
+                                        isRemote = false,
+                                        Name = new string(songTitle).Trim(),
+                                        TimeMs = GetSongLengthInMs(path),
+                                        songGroupId = soundtracks[b].songGroups[i].id,
+                                        soundtrackId = soundtracks[b].id,
+                                        id = nextSongId 
+                                    });
                                 }));
 
                                 soundtracks[b].CalculateTotalTimeMs();
@@ -1181,7 +1199,14 @@ namespace OGXboxSoundtrackEditor
                     soundtracks[b].numSongs++;
                     Dispatcher.Invoke(new Action(() =>
                     {
-                        soundtracks[b].allSongs.Add(new Song { isRemote = false, Name = new string(songTitle).Trim(), TimeMs = GetSongLengthInMs(path), songGroupId = sGroup.id, soundtrackId = soundtracks[b].id, id = nextSongId });
+                        soundtracks[b].allSongs.Add(new Song {
+                            isRemote = false,
+                            Name = new string(songTitle).Trim(),
+                            TimeMs = GetSongLengthInMs(path),
+                            songGroupId = sGroup.id,
+                            soundtrackId = soundtracks[b].id,
+                            id = nextSongId 
+                        });
                     }));
                     soundtracks[b].CalculateTotalTimeMs();
 
