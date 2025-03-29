@@ -79,7 +79,7 @@ namespace OGXboxSoundtrackEditor
                 return;
             }
 
-            if (cboBitrate.SelectedIndex != 1)
+            if (cboBitrate.SelectedIndex != 1 && Properties.Settings.Default.bitrate == 128000)
             {
                 MessageBoxResult DialogResult = System.Windows.MessageBox.Show("Please note that some games may have issues playing songs that are not 128 kbps. Continue?", "Bitrate", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (DialogResult == MessageBoxResult.No)
@@ -88,7 +88,7 @@ namespace OGXboxSoundtrackEditor
                 }
             }
 
-            if (cboMusicDrive.SelectedIndex > 0)
+            if (cboMusicDrive.SelectedIndex > 0 && Properties.Settings.Default.MusicDrive == "E")
             {
                 MessageBoxResult DialogResult = System.Windows.MessageBox.Show("Note that you will need to patch your games to read music from the F or G partition on your Xbox. Continue?", "Music Partition", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (DialogResult == MessageBoxResult.No)
