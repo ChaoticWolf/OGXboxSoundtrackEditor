@@ -5,7 +5,7 @@ OG Xbox Soundtrack Editor is an application to manipulate the music stored on th
 * Create, delete, and rename soundtracks
 * Delete and rename songs in a soundtrack
 * Add WMA files to a soundtrack
-* Convert MP3, WAV, and FLAC files and add to a soundtrack
+* Convert MP3, WAV, FLAC, and M4A files and add to a soundtrack
 * Ability to choose bitrate
 * Choose which partition music is loaded from and saved to (E, F, and G)
 * Backup music database to .ZIP file
