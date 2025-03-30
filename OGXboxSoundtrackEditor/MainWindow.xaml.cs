@@ -1064,7 +1064,7 @@ namespace OGXboxSoundtrackEditor
             this.Close();
         }
 
-        private void AddTrackFiles(object paths, string TrackFormat, bool convert)
+        private void AddTrackFiles(object paths, int TrackTotal)
         {
             Soundtrack sTrack = null;
             Dispatcher.Invoke(new Action(() =>
@@ -1081,19 +1081,23 @@ namespace OGXboxSoundtrackEditor
                 progressBar.Maximum = realPaths.Length;
             }));
 
+            int CurrentTrack = 0;
+
             try
             {
                 foreach (string path in realPaths)
                 {
-                    if (!convert)
-                    {
-                        SetStatus("Adding " + TrackFormat + " tracks...");
+                    CurrentTrack++;
+                    
+                    string TrackFormat = Path.GetExtension(path);
 
+                    if (TrackFormat == ".wma")
+                    {
                         ftpLocalPaths.Add(path);
                     }
                     else
                     {
-                        SetStatus("Converting and adding " + TrackFormat + " tracks...");
+                        SetStatus($"Converting {TrackFormat} track... ({CurrentTrack} of {TrackTotal})");
 
                         string wmaOutputPath = OutputFolder + "\\" + nextSongId.ToString("X4") + ".wma";
                         using (MediaFoundationReader reader = new MediaFoundationReader(path))
@@ -1104,6 +1108,8 @@ namespace OGXboxSoundtrackEditor
                         ftpLocalPaths.Add(wmaOutputPath);
                     }
 
+                    SetStatus($"Adding {TrackFormat} track... ({CurrentTrack} of {TrackTotal})");
+
                     AddSongLoop(soundtrackId, path);
                     Dispatcher.Invoke(new Action(() =>
                     {
@@ -1111,7 +1117,7 @@ namespace OGXboxSoundtrackEditor
                     }));
                 }
 
-                SetStatus(TrackFormat + " tracks added");
+                SetStatus(TrackTotal + " tracks added");
 
                 SoundtracksEdited = true;
             }
@@ -1313,19 +1319,13 @@ namespace OGXboxSoundtrackEditor
             {
                 listSongs.ItemsSource = null;
                 btnDeleteSoundtrack.IsEnabled = false;
-                btnAddMP3.IsEnabled = false;
-                btnAddWMA.IsEnabled = false;
-                btnAddWAV.IsEnabled = false;
-                btnAddFLAC.IsEnabled = false;
+                btnAddTracks.IsEnabled = false;
                 btnRenameSoundtrack.IsEnabled = false;
                 return;
             }
             else
             {
-                btnAddMP3.IsEnabled = true;
-                btnAddWMA.IsEnabled = true;
-                btnAddWAV.IsEnabled = true;
-                btnAddFLAC.IsEnabled = true;
+                btnAddTracks.IsEnabled = true;
                 btnRenameSoundtrack.IsEnabled = true;
             }
 
@@ -1336,25 +1336,7 @@ namespace OGXboxSoundtrackEditor
             btnDeleteSoundtrack.IsEnabled = true;
         }
 
-        private async void btnAddWMA_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog oDialog = new OpenFileDialog();
-            oDialog.Filter = "Windows Media Audio files (*.wma)|*.wma";
-            oDialog.Multiselect = true;
-
-            if (oDialog.ShowDialog() != true)
-            {
-                return;
-            }
-
-            gridMain.IsEnabled = false;
-
-            await Task.Run(() => AddTrackFiles(oDialog.FileNames, "WMA", false));
-
-            gridMain.IsEnabled = true;
-        }
-
-        private async void btnAddMP3_Click(object sender, RoutedEventArgs e)
+        private async void btnAddTracks_Click(object sender, RoutedEventArgs e)
         {
             if (!Directory.Exists(OutputFolder))
             {
@@ -1363,7 +1345,8 @@ namespace OGXboxSoundtrackEditor
             }
 
             OpenFileDialog oDialog = new OpenFileDialog();
-            oDialog.Filter = "MP3 files (*.mp3)|*.mp3";
+            oDialog.Title = "Choose track files to add";
+            oDialog.Filter = "Track Files|*.wma; *.mp3; *.wav; *.flac; *.m4a|" + "WMA Files (*.wma)|*.wma|MP3 Files (*.mp3)|*.mp3|WAV Files (*.wav)|*.wav|FLAC Files (*.flac)|*.flac|M4A Files (*.m4a)|*.m4a";
             oDialog.Multiselect = true;
 
             if (oDialog.ShowDialog() != true)
@@ -1373,43 +1356,7 @@ namespace OGXboxSoundtrackEditor
 
             gridMain.IsEnabled = false;
 
-            await Task.Run(() => AddTrackFiles(oDialog.FileNames, "MP3", true));
-
-            gridMain.IsEnabled = true;
-        }
-
-        private async void btnAddWAV_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog oDialog = new OpenFileDialog();
-            oDialog.Filter = "WAV Files (*.wav)|*.wav";
-            oDialog.Multiselect = true;
-
-            if (oDialog.ShowDialog() != true)
-            {
-                return;
-            }
-
-            gridMain.IsEnabled = false;
-
-            await Task.Run(() => AddTrackFiles(oDialog.FileNames, "WAV", true));
-
-            gridMain.IsEnabled = true;
-        }
-
-        private async void btnAddFLAC_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog oDialog = new OpenFileDialog();
-            oDialog.Filter = "FLAC Files (*.flac)|*.flac";
-            oDialog.Multiselect = true;
-
-            if (oDialog.ShowDialog() != true)
-            {
-                return;
-            }
-
-            gridMain.IsEnabled = false;
-
-            await Task.Run(() => AddTrackFiles(oDialog.FileNames, "FLAC", true));
+            await Task.Run(() => AddTrackFiles(oDialog.FileNames, oDialog.FileNames.Length));
 
             gridMain.IsEnabled = true;
         }
