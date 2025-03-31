@@ -24,6 +24,7 @@
                 <MenuItem x:Name="mnuSaveToXbox" Header="Save to Xbox" Click="mnuSaveToXbox_Click" IsEnabled="false" />
                 <MenuItem Header="Backup from Xbox" Click="mnuBackupFromXbox_Click" IsEnabled="False" />
                 <MenuItem Header="Upload Backup to Xbox" Click="mnuUploadBackupToXbox_Click" IsEnabled="False" />
+                <MenuItem x:Name="mnuPatchXBE" Header="Patch XBE" Click="mnuPatchXBE_Click" />
                 <Separator />
                 <MenuItem Header="_Exit" Click="mnuExit_Click" />
             </MenuItem>

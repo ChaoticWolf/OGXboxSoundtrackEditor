@@ -1047,6 +1047,12 @@ namespace OGXboxSoundtrackEditor
             */
         }
 
+        private void mnuPatchXBE_Click(object sender, RoutedEventArgs e)
+        {
+            XBEPatch XBEPatch = new XBEPatch();
+            XBEPatch.Show();
+        }
+
         private void mnuSettings_Click(object sender, RoutedEventArgs e)
         {
             UserSettings wndSettings = new UserSettings();
