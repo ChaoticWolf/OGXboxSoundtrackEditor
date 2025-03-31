@@ -1095,9 +1095,9 @@ namespace OGXboxSoundtrackEditor
                 {
                     CurrentTrack++;
                     
-                    string TrackFormat = Path.GetExtension(path);
+                    string TrackFormat = Path.GetExtension(path).Replace(".", "").ToUpper();
 
-                    if (TrackFormat == ".wma")
+                    if (TrackFormat == "WMA")
                     {
                         ftpLocalPaths.Add(path);
                     }
