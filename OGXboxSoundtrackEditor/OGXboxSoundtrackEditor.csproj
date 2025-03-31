@@ -185,9 +185,6 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="green.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="NewFolder1\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
