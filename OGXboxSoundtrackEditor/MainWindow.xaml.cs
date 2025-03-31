@@ -1116,7 +1116,7 @@ namespace OGXboxSoundtrackEditor
 
                     SetStatus($"Adding {TrackFormat} track... ({CurrentTrack} of {TrackTotal})");
 
-                    AddSongLoop(soundtrackId, path);
+                    AddSong(soundtrackId, path);
                     Dispatcher.Invoke(new Action(() =>
                     {
                         progressBar.Value++;
@@ -1138,7 +1138,7 @@ namespace OGXboxSoundtrackEditor
             }));
         }
 
-        private void AddSongLoop(int soundtrackId, string path)
+        private void AddSong(int soundtrackId, string path)
         {
             char[] songTitle = new char[32];
             IWMPMedia mediainfo = wmp.newMedia(path);
