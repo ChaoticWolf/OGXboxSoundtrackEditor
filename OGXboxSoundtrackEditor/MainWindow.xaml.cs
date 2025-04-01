@@ -1093,6 +1093,30 @@ namespace OGXboxSoundtrackEditor
             {
                 foreach (string path in realPaths)
                 {
+                    IWMPMedia mediainfo = wmp.newMedia(path);
+                    string title = mediainfo.name.Trim();
+
+                    if (title.Length > 32)
+                    {
+                        bool NewTitle = Dispatcher.Invoke(new Func<bool>(() =>
+                        {
+                            TitleInput TitleInput = new TitleInput("Song name \"" + title + "\" is too long. Please enter a new one.", "Edit Song Title", 32);
+                            if (TitleInput.ShowDialog() != true)
+                            {
+                                return false;
+                            }
+
+                            title = TitleInput.TrackTitle;
+                            return true;
+                        }));
+
+                        if (!NewTitle)
+                        {
+                            TrackTotal--;
+                            continue;
+                        }
+                    }
+
                     CurrentTrack++;
                     
                     string TrackFormat = Path.GetExtension(path).Replace(".", "").ToUpper();
@@ -1116,7 +1140,7 @@ namespace OGXboxSoundtrackEditor
 
                     SetStatus($"Adding {TrackFormat} track... ({CurrentTrack} of {TrackTotal})");
 
-                    AddSong(soundtrackId, path);
+                    AddSong(soundtrackId, path, title);
                     Dispatcher.Invoke(new Action(() =>
                     {
                         progressBar.Value++;
@@ -1138,32 +1162,9 @@ namespace OGXboxSoundtrackEditor
             }));
         }
 
-        private void AddSong(int soundtrackId, string path)
+        private void AddSong(int soundtrackId, string path, string title)
         {
             char[] songTitle = new char[32];
-            IWMPMedia mediainfo = wmp.newMedia(path);
-            string title = mediainfo.name.Trim();
-
-            if (title.Length > 32)
-            {
-                bool NewTitle = Dispatcher.Invoke(new Func<bool>(() =>
-                {
-                    TitleInput TitleInput = new TitleInput("Song name \"" + mediainfo.name + "\" is too long. Please enter a new one.", "Edit Song Title", 32);
-                    if (TitleInput.ShowDialog() != true)
-                    {
-                        return false;
-                    }
-
-                    title = TitleInput.TrackTitle;
-                    return true;
-                }));
-
-                if (!NewTitle)
-                {
-                    return;
-                }
-            }
-
             title.CopyTo(0, songTitle, 0, title.Length);
 
             for (int b = 0; b < soundtracks.Count; b++)
