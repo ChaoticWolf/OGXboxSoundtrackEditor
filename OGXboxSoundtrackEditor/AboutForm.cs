@@ -10,7 +10,7 @@ namespace OGXboxSoundtrackEditor
         {
             Application.EnableVisualStyles();
             InitializeComponent();
-            this.labelVersion.Text = String.Format("Version {0}", AssemblyVersion);
+            this.labelVersion.Text = String.Format("Version {0}", ProductVersion);
         }
 
         #region Assembly Attribute Accessors
