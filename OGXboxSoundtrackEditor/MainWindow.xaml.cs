@@ -1068,6 +1068,14 @@ namespace OGXboxSoundtrackEditor
             }
         }
 
+        private void mnuAbout_Click(object sender, RoutedEventArgs e)
+        {
+            using (AboutForm AboutForm = new AboutForm())
+            {
+                AboutForm.ShowDialog();
+            }
+        }
+
         private void mnuExit_Click(object sender, RoutedEventArgs e)
         {
             this.Close();

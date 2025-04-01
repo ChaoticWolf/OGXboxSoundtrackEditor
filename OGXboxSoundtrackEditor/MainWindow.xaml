@@ -29,6 +29,7 @@
                 <MenuItem Header="_Exit" Click="mnuExit_Click" />
             </MenuItem>
             <MenuItem Header="_Settings" Click="mnuSettings_Click" />
+            <MenuItem Header="_About" Click="mnuAbout_Click" />
         </Menu>
         <GroupBox Header="Soundtracks" Margin="10" Grid.Row="1" Grid.Column="0">
             <Grid>
