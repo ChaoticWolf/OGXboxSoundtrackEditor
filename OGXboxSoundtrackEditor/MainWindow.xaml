@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:OGXboxSoundtrackEditor"
         mc:Ignorable="d"
-        Title="Xbox Soundtrack Editor" Height="450" Width="850" Closing="Window_Closing">
+        Title="OG Xbox Soundtrack Editor" Height="450" Width="850" Closing="Window_Closing">
     <Grid x:Name="gridMain">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="300"/>
