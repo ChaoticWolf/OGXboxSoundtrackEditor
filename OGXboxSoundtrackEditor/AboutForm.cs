@@ -13,17 +13,6 @@ namespace OGXboxSoundtrackEditor
             this.labelVersion.Text = String.Format("Version {0}", ProductVersion);
         }
 
-        #region Assembly Attribute Accessors
-
-        public string AssemblyVersion
-        {
-            get
-            {
-                return Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            }
-        }
-        #endregion
-
         private void buttonOk_Click(object sender, EventArgs e)
         {
             this.Close();
