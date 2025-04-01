@@ -226,8 +226,11 @@ namespace OGXboxSoundtrackEditor
             songGroupCount = 0;
             paddingBetween = 0;
 
-            soundtracks.Clear();
-            listSoundtracks.ItemsSource = soundtracks;
+            Dispatcher.Invoke(new Action(() =>
+            {
+                soundtracks.Clear();
+                listSoundtracks.ItemsSource = soundtracks;
+            }));
         }
 
         private void OpenDb(byte[] bytes)
@@ -691,25 +694,27 @@ namespace OGXboxSoundtrackEditor
                 if (files.All(file => file.Name != "ST.DB"))
                 {
                     SetStatus("No soundtracks found on Xbox");
-                    FTP.Disconnect();
-                    return;
+                    NewDb();
                 }
-
-                if (!FTP.DownloadBytes(out byte[] DownloadedBytes, "ST.DB"))
+                else if (FTP.DownloadBytes(out byte[] DownloadedBytes, "ST.DB"))
+                {
+                    if (DownloadedBytes.Length == 0)
+                    {
+                        SetStatus("No soundtracks in database");
+                        NewDb();
+                    }
+                    else
+                    {
+                        OpenDb(DownloadedBytes);
+                        SetStatus("Soundtrack database loaded");
+                    }
+                }
+                else
                 {
                     SetStatus("Couldn't download soundtrack database");
                     FTP.Disconnect();
                     return;
                 }
-
-                if (DownloadedBytes.Length == 0)
-                {
-                    SetStatus("No soundtracks in database");
-                    FTP.Disconnect();
-                    return;
-                }
-
-                OpenDb(DownloadedBytes);
 
                 Dispatcher.Invoke(new Action(() =>
                 {
@@ -717,8 +722,6 @@ namespace OGXboxSoundtrackEditor
                     btnAddSoundtrack.IsEnabled = true;
                     listSoundtracks.ItemsSource = soundtracks;
                 }));
-
-                SetStatus("Soundtrack database loaded");
             }
             catch (FtpException ex)
             {
@@ -727,7 +730,7 @@ namespace OGXboxSoundtrackEditor
             }
             catch
             {
-                SetStatus("Unknown error");
+                SetStatus("Error retrieving soundtracks");
             }
 
             FTP.Disconnect();
