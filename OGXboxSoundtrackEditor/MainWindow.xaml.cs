@@ -23,12 +23,7 @@ namespace OGXboxSoundtrackEditor
     /// </summary>
     public partial class MainWindow : Window
     {
-        List<FtpLogEntry> logLines = new List<FtpLogEntry>();
-
         FtpClient FTP;
-
-        bool blankSoundtrackAdded = false;
-        int blankSoundtrackId = 0;
 
         // wma stuff
         WindowsMediaPlayer wmp = new WindowsMediaPlayer();
@@ -43,8 +38,9 @@ namespace OGXboxSoundtrackEditor
         string MusicDrive;
         int bitrate;
 
-        string XboxMusicDirectory;
+        bool blankSoundtrackAdded;
         bool SoundtracksEdited;
+        string XboxMusicDirectory;
 
         List<string> ftpLocalPaths = new List<string>();
         List<string> ftpDestPaths = new List<string>();
@@ -786,10 +782,9 @@ namespace OGXboxSoundtrackEditor
 
                 SetStatus("Uploaded to Xbox");
             }
-            catch (Exception ex)
+            catch
             {
                 SetStatus("Error uploading changes");
-                MessageBox.Show(ex.ToString());
             }
             finally
             {
@@ -1178,6 +1173,8 @@ namespace OGXboxSoundtrackEditor
             char[] songTitle = new char[32];
             title.CopyTo(0, songTitle, 0, title.Length);
 
+            int songMs = GetSongLengthInMs(path);
+
             for (int b = 0; b < soundtracks.Count; b++)
             {
                 if (soundtracks[b].id == soundtrackId)
@@ -1190,14 +1187,14 @@ namespace OGXboxSoundtrackEditor
                             {
                                 soundtracks[b].songGroups[i].songId[a] = nextSongId;
                                 soundtracks[b].songGroups[i].songNames[a] = songTitle;
-                                soundtracks[b].songGroups[i].songTimeMilliseconds[a] = GetSongLengthInMs(path);
+                                soundtracks[b].songGroups[i].songTimeMilliseconds[a] = songMs;
                                 soundtracks[b].numSongs++;
                                 Dispatcher.Invoke(new Action(() =>
                                 {
                                     soundtracks[b].allSongs.Add(new Song { 
                                         isRemote = false,
                                         Name = new string(songTitle).Trim(),
-                                        TimeMs = GetSongLengthInMs(path),
+                                        TimeMs = songMs,
                                         songGroupId = soundtracks[b].songGroups[i].id,
                                         soundtrackId = soundtracks[b].id,
                                         id = nextSongId 
@@ -1222,7 +1219,7 @@ namespace OGXboxSoundtrackEditor
                     sGroup.padding = 0x00000001;
                     sGroup.songId[0] = nextSongId;
                     sGroup.songNames[0] = songTitle;
-                    sGroup.songTimeMilliseconds[0] = GetSongLengthInMs(path);
+                    sGroup.songTimeMilliseconds[0] = songMs;
                     soundtracks[b].songGroups.Add(sGroup);
                     soundtracks[b].numSongs++;
                     Dispatcher.Invoke(new Action(() =>
@@ -1230,7 +1227,7 @@ namespace OGXboxSoundtrackEditor
                         soundtracks[b].allSongs.Add(new Song {
                             isRemote = false,
                             Name = new string(songTitle).Trim(),
-                            TimeMs = GetSongLengthInMs(path),
+                            TimeMs = songMs,
                             songGroupId = sGroup.id,
                             soundtrackId = soundtracks[b].id,
                             id = nextSongId 
