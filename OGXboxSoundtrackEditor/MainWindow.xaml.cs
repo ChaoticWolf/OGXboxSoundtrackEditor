@@ -1153,13 +1153,16 @@ namespace OGXboxSoundtrackEditor
                     }));
                 }
 
-                SetStatus(TrackTotal + " tracks added");
+                if (TrackTotal > 0)
+                {
+                    SetStatus(TrackTotal + " tracks added");
+                }
 
                 SoundtracksEdited = true;
             }
             catch
             {
-                SetStatus("Unknown error");
+                SetStatus("Error adding tracks");
             }
 
             Dispatcher.Invoke(new Action(() =>
