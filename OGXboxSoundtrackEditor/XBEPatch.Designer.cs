@@ -30,7 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(XBEPatch));
             this.btnOk = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
+            this.labelInfo = new System.Windows.Forms.Label();
             this.btnBrowse = new System.Windows.Forms.Button();
             this.labelStatus = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -49,14 +49,14 @@
             this.btnOk.UseVisualStyleBackColor = true;
             this.btnOk.Click += new System.EventHandler(this.btnOk_Click);
             // 
-            // label1
+            // labelInfo
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(14, 9);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(455, 64);
-            this.label1.TabIndex = 1;
-            this.label1.Text = resources.GetString("label1.Text");
+            this.labelInfo.AutoSize = true;
+            this.labelInfo.Location = new System.Drawing.Point(14, 9);
+            this.labelInfo.Name = "labelInfo";
+            this.labelInfo.Size = new System.Drawing.Size(455, 64);
+            this.labelInfo.TabIndex = 1;
+            this.labelInfo.Text = resources.GetString("labelInfo.Text");
             // 
             // btnBrowse
             // 
@@ -119,7 +119,7 @@
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.labelStatus);
             this.Controls.Add(this.btnBrowse);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.labelInfo);
             this.Controls.Add(this.btnOk);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
@@ -136,7 +136,7 @@
         #endregion
 
         private System.Windows.Forms.Button btnOk;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label labelInfo;
         private System.Windows.Forms.Button btnBrowse;
         private System.Windows.Forms.Label labelStatus;
         private System.Windows.Forms.GroupBox groupBox1;
