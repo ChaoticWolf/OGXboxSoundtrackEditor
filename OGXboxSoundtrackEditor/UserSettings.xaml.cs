@@ -24,7 +24,7 @@ namespace OGXboxSoundtrackEditor
             txtOutputDirectory.Text = OutputFolder;
             txtIpAddress.Text = IPAddress;
             txtUsername.Text = Username;
-            txtPassword.Text = Password;
+            txtPassword.Password = Password;
             intPort.Value = Port;
             if (ActiveMode)
             {
@@ -100,7 +100,7 @@ namespace OGXboxSoundtrackEditor
             Properties.Settings.Default.OutputFolder = txtOutputDirectory.Text;
             Properties.Settings.Default.IPAddress = txtIpAddress.Text.Trim();
             Properties.Settings.Default.Username = txtUsername.Text;
-            Properties.Settings.Default.Password = txtPassword.Text;
+            Properties.Settings.Default.Password = txtPassword.Password;
             Properties.Settings.Default.Port = intPort.Value;
             if (cbActiveMode.IsChecked == true)
             {
