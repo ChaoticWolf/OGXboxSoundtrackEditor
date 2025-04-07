@@ -1156,9 +1156,8 @@ namespace OGXboxSoundtrackEditor
                 if (TrackTotal > 0)
                 {
                     SetStatus(TrackTotal + " tracks added");
+                    SoundtracksEdited = true;
                 }
-
-                SoundtracksEdited = true;
             }
             catch
             {
