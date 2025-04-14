@@ -1102,11 +1102,11 @@ namespace OGXboxSoundtrackEditor
                     IWMPMedia mediainfo = wmp.newMedia(path);
                     string title = mediainfo.name.Trim();
 
-                    if (title.Length > 32)
+                    if (title.Length > 31)
                     {
                         bool NewTitle = Dispatcher.Invoke(new Func<bool>(() =>
                         {
-                            TitleInput TitleInput = new TitleInput("Song name \"" + title + "\" is too long. Please enter a new one.", "Edit Song Title", 32);
+                            TitleInput TitleInput = new TitleInput("Song name \"" + title + "\" is too long. Please enter a new one.", "Edit Song Title", 31);
                             if (TitleInput.ShowDialog() != true)
                             {
                                 return false;
@@ -1254,7 +1254,7 @@ namespace OGXboxSoundtrackEditor
 
         private void btnAddSoundtrack_Click(object sender, RoutedEventArgs e)
         {
-            TitleInput TitleInput = new TitleInput("Enter a soundtrack title.", "Soundtrack Title", 64);
+            TitleInput TitleInput = new TitleInput("Enter a soundtrack title.", "Soundtrack Title", 31);
             if (TitleInput.ShowDialog() != true)
             {
                 return;
@@ -1303,7 +1303,7 @@ namespace OGXboxSoundtrackEditor
         {
             Soundtrack sTrack = (Soundtrack)listSoundtracks.SelectedItem;
 
-            TitleInput TitleInput = new TitleInput("Enter a new soundtrack title.", "Edit Soundtrack Title", 64);
+            TitleInput TitleInput = new TitleInput("Enter a new soundtrack title.", "Edit Soundtrack Title", 31);
             if (TitleInput.ShowDialog() != true)
             {
                 return;
@@ -1453,7 +1453,7 @@ namespace OGXboxSoundtrackEditor
         {
             Song song = (Song)listSongs.SelectedItem;
 
-            TitleInput TitleInput = new TitleInput("Enter a new song title.", "Edit Song Title", 32);
+            TitleInput TitleInput = new TitleInput("Enter a new song title.", "Edit Song Title", 31);
             if (TitleInput.ShowDialog() != true)
             {
                 return;
