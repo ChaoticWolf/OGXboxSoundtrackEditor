@@ -141,7 +141,7 @@ namespace OGXboxSoundtrackEditor
             return false;
         }
 
-        private bool MusicWorkingDirectory()
+        private bool GetMusicWorkingDirectory()
         {
             XboxMusicDirectory = "";
             var server = FTP.SystemType;
@@ -625,7 +625,7 @@ namespace OGXboxSoundtrackEditor
 
             try
             {
-                if (!MusicWorkingDirectory())
+                if (!GetMusicWorkingDirectory())
                 {
                     return;
                 }
@@ -678,7 +678,7 @@ namespace OGXboxSoundtrackEditor
 
             try
             {
-                if (!MusicWorkingDirectory())
+                if (!GetMusicWorkingDirectory())
                 {
                     return;
                 }
@@ -752,7 +752,7 @@ namespace OGXboxSoundtrackEditor
 
             try
             {
-                if (!MusicWorkingDirectory())
+                if (!GetMusicWorkingDirectory())
                 {
                     return;
                 }
@@ -1424,7 +1424,7 @@ namespace OGXboxSoundtrackEditor
                         return;
                     }
 
-                    if (!MusicWorkingDirectory())
+                    if (!GetMusicWorkingDirectory())
                     {
                         return;
                     }
