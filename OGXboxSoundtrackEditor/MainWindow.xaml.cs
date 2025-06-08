@@ -1365,7 +1365,12 @@ namespace OGXboxSoundtrackEditor
 
             OpenFileDialog oDialog = new OpenFileDialog();
             oDialog.Title = "Choose track files to add";
-            oDialog.Filter = "Track Files|*.wma; *.mp3; *.wav; *.flac; *.m4a|" + "WMA Files (*.wma)|*.wma|MP3 Files (*.mp3)|*.mp3|WAV Files (*.wav)|*.wav|FLAC Files (*.flac)|*.flac|M4A Files (*.m4a)|*.m4a";
+            oDialog.Filter = "Track Files|*.wma; *.mp3; *.wav; *.flac; *.m4a|" + 
+                             "WMA Files (*.wma)|*.wma|" +
+                             "MP3 Files (*.mp3)|*.mp3|" +
+                             "WAV Files (*.wav)|*.wav|" +
+                             "FLAC Files (*.flac)|*.flac|" +
+                             "M4A Files (*.m4a)|*.m4a";
             oDialog.Multiselect = true;
 
             if (oDialog.ShowDialog() != true)
