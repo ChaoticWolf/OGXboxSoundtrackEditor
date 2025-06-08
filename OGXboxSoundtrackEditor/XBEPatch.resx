@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="labelInfo.Text" xml:space="preserve">
-    <value>Select an XBE to patch to read soundtracks from another partition.
+    <value>Select an XBE to patch to load soundtracks from another partition and/or drive.
 If using XISO, be sure to select the game's XBE and not the attacher XBE.
 If a title update is installed for the game, you need to patch the update's XBE.
 A backup of the file will be created before patching.</value>

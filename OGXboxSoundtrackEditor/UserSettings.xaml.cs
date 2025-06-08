@@ -19,7 +19,8 @@ namespace OGXboxSoundtrackEditor
             int Port = Properties.Settings.Default.Port;
             bool ActiveMode = Properties.Settings.Default.ActiveMode;
             int bitrate = Properties.Settings.Default.bitrate;
-            string MusicDrive = Properties.Settings.Default.MusicDrive;
+            string MusicPartition = Properties.Settings.Default.MusicPartition;
+            int MusicDrive = Properties.Settings.Default.MusicDrive;
 
             txtOutputDirectory.Text = OutputFolder;
             txtIpAddress.Text = IPAddress;
@@ -50,17 +51,25 @@ namespace OGXboxSoundtrackEditor
             {
                 cboBitrate.SelectedIndex = 4;
             }
-            if (MusicDrive == "E")
+            if (MusicPartition == "E")
             {
-                cboMusicDrive.SelectedIndex = 0;
+                cboMusicPartition.SelectedIndex = 0;
             }
-            else if (MusicDrive == "F")
+            else if (MusicPartition == "F")
             {
-                cboMusicDrive.SelectedIndex = 1;
+                cboMusicPartition.SelectedIndex = 1;
             }
-            else if (MusicDrive == "G")
+            else if (MusicPartition == "G")
             {
-                cboMusicDrive.SelectedIndex = 2;
+                cboMusicPartition.SelectedIndex = 2;
+            }
+            if (MusicDrive == 0)
+            {
+                radioButtonHDD1.IsChecked = true;
+            }
+            else if (MusicDrive == 1)
+            {
+                radioButtonHDD2.IsChecked = true;
             }
         }
 
@@ -88,9 +97,18 @@ namespace OGXboxSoundtrackEditor
                 }
             }
 
-            if (cboMusicDrive.SelectedIndex > 0 && Properties.Settings.Default.MusicDrive == "E")
+            if (cboMusicPartition.SelectedIndex > 0 && Properties.Settings.Default.MusicPartition == "E")
             {
                 MessageBoxResult DialogResult = System.Windows.MessageBox.Show("Note that you will need to patch your games to read music from the F or G partition on your Xbox. Continue?", "Music Partition", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (DialogResult == MessageBoxResult.No)
+                {
+                    return;
+                }
+            }
+
+            if (radioButtonHDD2.IsChecked == true && Properties.Settings.Default.MusicDrive == 0)
+            {
+                MessageBoxResult DialogResult = System.Windows.MessageBox.Show("Note that you will need to patch your games to read music from the second hard drive on your Xbox. A BIOS and dashboard with dual HDD support is required. Continue?", "Music Drive", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (DialogResult == MessageBoxResult.No)
                 {
                     return;
@@ -130,17 +148,25 @@ namespace OGXboxSoundtrackEditor
             {
                 Properties.Settings.Default.bitrate = 320000;
             }
-            if (cboMusicDrive.SelectedIndex == 0)
+            if (cboMusicPartition.SelectedIndex == 0)
             {
-                Properties.Settings.Default.MusicDrive = "E";
+                Properties.Settings.Default.MusicPartition = "E";
             }
-            else if (cboMusicDrive.SelectedIndex == 1)
+            else if (cboMusicPartition.SelectedIndex == 1)
             {
-                Properties.Settings.Default.MusicDrive = "F";
+                Properties.Settings.Default.MusicPartition = "F";
             }
-            else if (cboMusicDrive.SelectedIndex == 2)
+            else if (cboMusicPartition.SelectedIndex == 2)
             {
-                Properties.Settings.Default.MusicDrive = "G";
+                Properties.Settings.Default.MusicPartition = "G";
+            }
+            if (radioButtonHDD1.IsChecked == true)
+            {
+                Properties.Settings.Default.MusicDrive = 0;
+            } 
+            else if (radioButtonHDD2.IsChecked == true)
+            {
+                Properties.Settings.Default.MusicDrive = 1;
             }
 
             Properties.Settings.Default.Save();

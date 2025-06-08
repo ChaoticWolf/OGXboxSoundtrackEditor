@@ -110,9 +110,21 @@ namespace OGXboxSoundtrackEditor.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("E")]
-        public string MusicDrive {
+        public string MusicPartition {
             get {
-                return ((string)(this["MusicDrive"]));
+                return ((string)(this["MusicPartition"]));
+            }
+            set {
+                this["MusicPartition"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int MusicDrive {
+            get {
+                return ((int)(this["MusicDrive"]));
             }
             set {
                 this["MusicDrive"] = value;

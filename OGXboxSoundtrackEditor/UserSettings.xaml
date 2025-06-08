@@ -32,12 +32,14 @@
             <ComboBoxItem>256 kbps</ComboBoxItem>
             <ComboBoxItem>320 kbps</ComboBoxItem>
         </ComboBox>
-        <Label Grid.Column="1" Content="Music Drive:" HorizontalAlignment="Left" Margin="100,10,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.RowSpan="2"/>
-        <ComboBox x:Name="cboMusicDrive" Grid.Column="1" HorizontalAlignment="Left" Margin="180,10,0,0" SelectedIndex="0" Grid.Row="1" VerticalAlignment="Top" Width="45" Height="26" Grid.RowSpan="2">
+        <Label Grid.Column="1" Content="Music Partition:" HorizontalAlignment="Left" Margin="100,10,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.RowSpan="2"/>
+        <ComboBox x:Name="cboMusicPartition" Grid.Column="1" HorizontalAlignment="Left" Margin="195,10,0,0" SelectedIndex="0" Grid.Row="1" VerticalAlignment="Top" Width="45" Height="26" Grid.RowSpan="2">
             <ComboBoxItem>E</ComboBoxItem>
             <ComboBoxItem>F</ComboBoxItem>
             <ComboBoxItem>G</ComboBoxItem>
         </ComboBox>
+        <RadioButton x:Name="radioButtonHDD1" Grid.Column="1" Content="HDD 1" HorizontalAlignment="Left" Margin="245,5,0,0" Grid.Row="1" VerticalAlignment="Top" IsChecked="True"/>
+        <RadioButton x:Name="radioButtonHDD2" Grid.Column="1" Content="HDD 2" HorizontalAlignment="Left" Margin="245,20,0,0" Grid.Row="1" VerticalAlignment="Top"/>
         <Label Grid.Row="2" Margin="10,10,0,0" Content="IP:" HorizontalAlignment="Right" />
         <TextBox Grid.Row="2" x:Name="txtIpAddress" Grid.Column="1" Margin="10,10,0,0" TextChanged="txtIpAddress_TextChanged" />
         <Label Grid.Row="3" Margin="10,10,0,0" Content="Username:" HorizontalAlignment="Right" />

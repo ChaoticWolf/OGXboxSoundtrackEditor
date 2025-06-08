@@ -13,9 +13,13 @@ namespace OGXboxSoundtrackEditor
             Application.EnableVisualStyles();
             InitializeComponent();
 
-            if (Properties.Settings.Default.MusicDrive == "G")
+            if (Properties.Settings.Default.MusicPartition == "G")
             {
                 radioButtonG.Checked = true;
+            }
+            if (Properties.Settings.Default.MusicDrive == 1)
+            {
+                radioButtonHDD2.Checked = true;
             }
         }
 
@@ -49,6 +53,7 @@ namespace OGXboxSoundtrackEditor
             SetStatus("Patching...");
 
             int PartitionNumber;
+            int DriveNumber;
 
             if (radioButtonF.Checked == true)
             {
@@ -58,14 +63,22 @@ namespace OGXboxSoundtrackEditor
             {
                 PartitionNumber = 7;
             }
+            if (radioButtonHDD1.Checked == true)
+            {
+                DriveNumber = 0;
+            }
+            else
+            {
+                DriveNumber = 1;
+            }
 
             string[] OldPaths = {
-                "5C 44 65 76 69 63 65 5C 48 61 72 64 64 69 73 6B 30 5C ?? 61 72 74 69 74 69 6F 6E ?? 5C 54 44 41 54 41 5C 46 46 46 45 30 30 30 30 5C 4D 55 53 49 43 5C", // \Device\Harddisk0\(P|p)artition?\TDATA\FFFE0000\MUSIC\
-                "5C 44 65 76 69 63 65 5C 48 61 72 64 64 69 73 6B 30 5C ?? 61 72 74 69 74 69 6F 6E ?? 5C 54 44 41 54 41 5C 46 46 46 45 30 30 30 30 5C 4D 55 53 49 43 5C 53 54 2E 44 42" // \Device\Harddisk0\(P|p)artition?\TDATA\FFFE0000\MUSIC\ST.DB
+                "5C 44 65 76 69 63 65 5C 48 61 72 64 64 69 73 6B ?? 5C ?? 61 72 74 69 74 69 6F 6E ?? 5C 54 44 41 54 41 5C 46 46 46 45 30 30 30 30 5C 4D 55 53 49 43 5C", // \Device\Harddisk?\(P|p)artition?\TDATA\FFFE0000\MUSIC\
+                "5C 44 65 76 69 63 65 5C 48 61 72 64 64 69 73 6B ?? 5C ?? 61 72 74 69 74 69 6F 6E ?? 5C 54 44 41 54 41 5C 46 46 46 45 30 30 30 30 5C 4D 55 53 49 43 5C 53 54 2E 44 42" // \Device\Harddisk?\(P|p)artition?\TDATA\FFFE0000\MUSIC\ST.DB
             };
             string[] NewPaths = {
-                HexString($"\\Device\\Harddisk0\\Partition{PartitionNumber}\\TDATA\\FFFE0000\\MUSIC\\"),
-                HexString($"\\Device\\Harddisk0\\Partition{PartitionNumber}\\TDATA\\FFFE0000\\MUSIC\\ST.DB")
+                HexString($"\\Device\\Harddisk{DriveNumber}\\Partition{PartitionNumber}\\TDATA\\FFFE0000\\MUSIC\\"),
+                HexString($"\\Device\\Harddisk{DriveNumber}\\Partition{PartitionNumber}\\TDATA\\FFFE0000\\MUSIC\\ST.DB")
             };
 
             if (PatchUtility.SearchAndReplace(file, OldPaths, NewPaths))

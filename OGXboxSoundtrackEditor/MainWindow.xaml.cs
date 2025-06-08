@@ -35,7 +35,8 @@ namespace OGXboxSoundtrackEditor
         string Password;
         int Port;
         bool ActiveMode;
-        string MusicDrive;
+        string MusicPartition;
+        int MusicDrive;
         int bitrate;
 
         bool blankSoundtrackAdded;
@@ -77,6 +78,7 @@ namespace OGXboxSoundtrackEditor
             Password = Properties.Settings.Default.Password;
             Port = Properties.Settings.Default.Port;
             ActiveMode = Properties.Settings.Default.ActiveMode;
+            MusicPartition = Properties.Settings.Default.MusicPartition;
             MusicDrive = Properties.Settings.Default.MusicDrive;
             bitrate = Properties.Settings.Default.bitrate;
         }
@@ -165,9 +167,9 @@ namespace OGXboxSoundtrackEditor
 
             string[] XboxDrives =
             {
-                MusicDrive, //E - Used by most dashboards
-                $"HDD0-{MusicDrive}", //PrometheOS
-                $"{MusicDrive}:", //E: - Used by some dashboards like Avalaunch
+                MusicPartition, //E - Used by most dashboards
+                $"HDD{MusicDrive}-{MusicPartition}", //PrometheOS
+                $"{MusicPartition}:", //E: - Used by some dashboards like Avalaunch
                 "Hdd1" //Xbox 360
             };
 

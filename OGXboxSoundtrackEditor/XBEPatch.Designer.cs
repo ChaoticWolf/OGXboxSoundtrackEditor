@@ -36,7 +36,11 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.radioButtonG = new System.Windows.Forms.RadioButton();
             this.radioButtonF = new System.Windows.Forms.RadioButton();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.radioButtonHDD1 = new System.Windows.Forms.RadioButton();
+            this.radioButtonHDD2 = new System.Windows.Forms.RadioButton();
             this.groupBox1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnOk
@@ -52,15 +56,15 @@
             // labelInfo
             // 
             this.labelInfo.AutoSize = true;
-            this.labelInfo.Location = new System.Drawing.Point(14, 9);
+            this.labelInfo.Location = new System.Drawing.Point(8, 9);
             this.labelInfo.Name = "labelInfo";
-            this.labelInfo.Size = new System.Drawing.Size(455, 64);
+            this.labelInfo.Size = new System.Drawing.Size(467, 64);
             this.labelInfo.TabIndex = 1;
             this.labelInfo.Text = resources.GetString("labelInfo.Text");
             // 
             // btnBrowse
             // 
-            this.btnBrowse.Location = new System.Drawing.Point(82, 108);
+            this.btnBrowse.Location = new System.Drawing.Point(30, 108);
             this.btnBrowse.Name = "btnBrowse";
             this.btnBrowse.Size = new System.Drawing.Size(90, 30);
             this.btnBrowse.TabIndex = 2;
@@ -71,7 +75,7 @@
             // labelStatus
             // 
             this.labelStatus.AutoSize = true;
-            this.labelStatus.Location = new System.Drawing.Point(178, 115);
+            this.labelStatus.Location = new System.Drawing.Point(126, 115);
             this.labelStatus.Name = "labelStatus";
             this.labelStatus.Size = new System.Drawing.Size(100, 16);
             this.labelStatus.TabIndex = 3;
@@ -81,7 +85,7 @@
             // 
             this.groupBox1.Controls.Add(this.radioButtonG);
             this.groupBox1.Controls.Add(this.radioButtonF);
-            this.groupBox1.Location = new System.Drawing.Point(304, 86);
+            this.groupBox1.Location = new System.Drawing.Point(252, 86);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(97, 60);
             this.groupBox1.TabIndex = 4;
@@ -111,11 +115,45 @@
             this.radioButtonF.Text = "F";
             this.radioButtonF.UseVisualStyleBackColor = true;
             // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.radioButtonHDD2);
+            this.groupBox2.Controls.Add(this.radioButtonHDD1);
+            this.groupBox2.Location = new System.Drawing.Point(355, 86);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(97, 60);
+            this.groupBox2.TabIndex = 5;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Drive";
+            // 
+            // radioButtonHDD2
+            // 
+            this.radioButtonHDD2.AutoSize = true;
+            this.radioButtonHDD2.Location = new System.Drawing.Point(6, 34);
+            this.radioButtonHDD2.Name = "radioButtonHDD2";
+            this.radioButtonHDD2.Size = new System.Drawing.Size(68, 20);
+            this.radioButtonHDD2.TabIndex = 1;
+            this.radioButtonHDD2.Text = "HDD 2";
+            this.radioButtonHDD2.UseVisualStyleBackColor = true;
+            // 
+            // radioButtonHDD1
+            // 
+            this.radioButtonHDD1.AutoSize = true;
+            this.radioButtonHDD1.Checked = true;
+            this.radioButtonHDD1.Location = new System.Drawing.Point(6, 14);
+            this.radioButtonHDD1.Name = "radioButtonHDD1";
+            this.radioButtonHDD1.Size = new System.Drawing.Size(68, 20);
+            this.radioButtonHDD1.TabIndex = 0;
+            this.radioButtonHDD1.TabStop = true;
+            this.radioButtonHDD1.Text = "HDD 1";
+            this.radioButtonHDD1.UseVisualStyleBackColor = true;
+            // 
             // XBEPatch
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(482, 213);
+            this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.labelStatus);
             this.Controls.Add(this.btnBrowse);
@@ -128,6 +166,8 @@
             this.Text = "Patch XBE";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -142,5 +182,8 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.RadioButton radioButtonG;
         private System.Windows.Forms.RadioButton radioButtonF;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.RadioButton radioButtonHDD1;
+        private System.Windows.Forms.RadioButton radioButtonHDD2;
     }
 }

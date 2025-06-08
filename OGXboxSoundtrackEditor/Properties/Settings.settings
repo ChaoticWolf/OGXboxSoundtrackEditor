@@ -23,8 +23,11 @@
     <Setting Name="bitrate" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">128000</Value>
     </Setting>
-    <Setting Name="MusicDrive" Type="System.String" Scope="User">
+    <Setting Name="MusicPartition" Type="System.String" Scope="User">
       <Value Profile="(Default)">E</Value>
+    </Setting>
+    <Setting Name="MusicDrive" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
     </Setting>
   </Settings>
 </SettingsFile>
