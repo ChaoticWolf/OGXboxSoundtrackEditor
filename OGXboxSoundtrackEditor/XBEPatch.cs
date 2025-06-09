@@ -55,7 +55,11 @@ namespace OGXboxSoundtrackEditor
             int PartitionNumber;
             int DriveNumber;
 
-            if (radioButtonF.Checked == true)
+            if (radioButtonE.Checked == true)
+            {
+                PartitionNumber = 1;
+            }
+            else if (radioButtonF.Checked == true)
             {
                 PartitionNumber = 6;
             }
