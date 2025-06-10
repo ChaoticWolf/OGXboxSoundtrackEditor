@@ -691,14 +691,14 @@ namespace OGXboxSoundtrackEditor
                 var files = FTP.GetListing(XboxMusicDirectory);
                 if (files.All(file => file.Name != "ST.DB"))
                 {
-                    SetStatus("No soundtracks found on Xbox");
+                    SetStatus("Database created");
                     NewDb();
                 }
                 else if (FTP.DownloadBytes(out byte[] DownloadedBytes, "ST.DB"))
                 {
                     if (DownloadedBytes.Length == 0)
                     {
-                        SetStatus("No soundtracks in database");
+                        SetStatus("Database created");
                         NewDb();
                     }
                     else
@@ -1044,13 +1044,13 @@ namespace OGXboxSoundtrackEditor
 
                 if (TrackTotal > 0)
                 {
-                    SetStatus(TrackTotal + " tracks added");
+                    SetStatus(TrackTotal + " track" + (TrackTotal > 1 ? "s" : "") + " added");
                     SoundtracksEdited = true;
                 }
             }
             catch
             {
-                SetStatus("Error adding tracks");
+                SetStatus("Error adding track" + (TrackTotal >1 ? "s" : ""));
             }
 
             Dispatcher.Invoke(new Action(() =>
