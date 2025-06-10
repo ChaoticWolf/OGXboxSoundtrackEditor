@@ -814,111 +814,50 @@ namespace OGXboxSoundtrackEditor
             gridMain.IsEnabled = true;
         }
 
-        private void BackupFromXbox(object zipPath)
+        private void BackupFromXbox(string zipPath)
         {
-            /*
+            if (!ConnectToXbox())
+            {
+                return;
+            }
+
+            SetStatus("Backing up from Xbox...");
+
             try
             {
-                using (FileStream fStream = new FileStream((string)zipPath, FileMode.Create))
+                if (!GetMusicWorkingDirectory())
                 {
-                    using (ZipArchive zip = new ZipArchive(fStream, ZipArchiveMode.Create, true))
-                    {
-                        ftpClient = new FtpClient(IPAddress, Username, Password);
-
-                        if (!ftpClient.Connect())
-                        {
-                            SetStatus("Error: Failed To Connnect To Xbox");
-                            return;
-                        }
-                        if (!ftpClient.Login())
-                        {
-                            SetStatus("Error: Wrong Username Or Password");
-                            return;
-                        }
-                        if (!ftpClient.ChangeWorkingDirectory(@"/E/TDATA/fffe0000/music"))
-                        {
-                            SetStatus("Error: No Music To Backup");
-                            ftpClient.Disconnect();
-                            return;
-                        }
-
-                        ftpClient.List();
-                        List<FtpDirectory> soundtrackFolders = ftpClient.GetDirectories();
-                        List<FtpFile> soundtrackFiles = ftpClient.GetFiles();
-
-                        foreach (FtpDirectory tempDir in soundtrackFolders)
-                        {
-                            if (!ftpClient.ChangeWorkingDirectory(tempDir.Name))
-                            {
-                                ftpClient.Disconnect();
-                                return;
-                            }
-
-                            ftpClient.List();
-                            List<FtpFile> subfolderFiles = ftpClient.GetFiles();
-
-                            foreach (FtpFile tempFile in subfolderFiles)
-                            {
-                                if (!ftpClient.Retrieve(tempFile.name))
-                                {
-                                    ftpClient.Disconnect();
-                                    return;
-                                }
-                                ZipArchiveEntry fileEntry = zip.CreateEntry(tempDir.Name + "/" + tempFile.name);
-                                using (BinaryWriter writer = new BinaryWriter(fileEntry.Open()))
-                                {
-                                    writer.Write(ftpClient.downloadedBytes, 0, ftpClient.downloadedBytes.Length);
-                                }
-                            }
-                            if (!ftpClient.ChangeWorkingDirectory(@"/E/TDATA/fffe0000/music"))
-                            {
-                                ftpClient.Disconnect();
-                                return;
-                            }
-                        }
-
-                        foreach (FtpFile tempFile in soundtrackFiles)
-                        {
-                            if (!ftpClient.Retrieve(tempFile.name))
-                            {
-                                ftpClient.Disconnect();
-                                return;
-                            }
-                            ZipArchiveEntry fileEntry = zip.CreateEntry(tempFile.name);
-                            using (BinaryWriter writer = new BinaryWriter(fileEntry.Open()))
-                            {
-                                writer.Write(ftpClient.downloadedBytes, 0, ftpClient.downloadedBytes.Length);
-                            }
-                        }
-
-                        ftpClient.Disconnect();
-                        Dispatcher.Invoke(new Action(() =>
-                        {
-                            txtStatus.Text = "DB Backed Up To Zip";
-                        }));
-                    }
+                    return;
                 }
+
+                FTP.SetWorkingDirectory(XboxMusicDirectory);
+
+                string copyPath = OutputFolder + "\\music\\";
+
+                //TODO: Only works with XBMC and PrometheOS, get it working for other dashboards
+                FTP.DownloadDirectory(copyPath, XboxMusicDirectory, FtpFolderSyncMode.Update, FtpLocalExists.Overwrite);
+
+                ZipFile.CreateFromDirectory(copyPath, zipPath);
+
+                Directory.Delete(copyPath, true);
+
+                SetStatus("Backup created from Xbox");
             }
             catch
             {
-                Dispatcher.Invoke(new Action(() => {
-                    txtStatus.Text = "Critical Error";
-                }));
+                SetStatus("Backup error");
+                MessageBox.Show("There was an error backing up the soundtracks.", "Backup Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            finally
-            {
-                Dispatcher.Invoke(new Action(() => {
-                    gridMain.IsEnabled = true;
-                }));
-            }
-            */
+
+            FTP.Disconnect();
         }
 
-        private void mnuBackupFromXbox_Click(object sender, RoutedEventArgs e)
+        private async void mnuBackupFromXbox_Click(object sender, RoutedEventArgs e)
         {
-            /*
             SaveFileDialog sDialog = new SaveFileDialog();
-            sDialog.Filter = "Zip files (*.zip)|*.zip";
+            sDialog.Title = "Create Soundtrack Backup";
+            sDialog.Filter = "ZIP Files (*.zip)|*.zip";
+            sDialog.FileName = "Xbox Soundtrack Backup - " + DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss") + ".zip";
             sDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             if (sDialog.ShowDialog() != true)
             {
@@ -926,125 +865,73 @@ namespace OGXboxSoundtrackEditor
             }
 
             gridMain.IsEnabled = false;
-            txtStatus.Text = "Backing Up From FTP";
-            thrFtpControl = new Thread(new ParameterizedThreadStart(BackupFromFtp));
-            thrFtpControl.Start(sDialog.FileName);
-            */
+
+            await Task.Run(() => BackupFromXbox(sDialog.FileName));
+
+            gridMain.IsEnabled = true;
         }
 
-        private void UploadBackupToXbox(object zipPath)
+        private void UploadBackupToXbox(string zipPath)
         {
-            /*
-            ftpClient = new FtpClient(IPAddress, Username, Password);
+            if (!ConnectToXbox())
+            {
+                return;
+            }
+
+            SetStatus("Uploading backup to Xbox...");
+
             try
             {
-                if (!ftpClient.Connect())
+                if (!GetMusicWorkingDirectory())
                 {
-                    SetStatus("Error: Failed To Connnect To Xbox");
-                    return;
-                }
-                if (!ftpClient.Login())
-                {
-                    SetStatus("Error: Wrong Username Or Password");
                     return;
                 }
 
-                if (!ChangeToMusicDirectory())
-                {
-                    SetStatus("Error: Failed To Create Music Folder");
-                    return;
-                }
+                FTP.SetWorkingDirectory(XboxMusicDirectory);
 
-                using (FileStream fStream = new FileStream((string)zipPath, FileMode.Open))
-                {
-                    using (ZipArchive zip = new ZipArchive(fStream, ZipArchiveMode.Read, true))
-                    {
-                        Dispatcher.Invoke(new Action(() => {
-                            progressBar.Maximum = zip.Entries.Count;
-                            progressBar.Value = 0;
-                        }));
-                        
-                        foreach (ZipArchiveEntry zArchive in zip.Entries)
-                        {
-                            using (BinaryReader bReader = new BinaryReader(zArchive.Open()))
-                            {
-                                long fileSize = zArchive.Length;
-                                ftpClient.toUploadBytes = bReader.ReadBytes((int)fileSize);
+                string extractPath = OutputFolder + "\\music\\";
 
-                                if (!ftpClient.ChangeWorkingDirectory(@"/E/TDATA/fffe0000/music"))
-                                {
-                                    ftpClient.Disconnect();
-                                    return;
-                                }
-                                //Debug.WriteLine(zArchive.FullName);
-                                if (zArchive.FullName.Contains("/"))
-                                {
-                                    string[] split = zArchive.FullName.Split('/');
-                                    ftpClient.MakeDirectory(split[0]);
-                                    ftpClient.ChangeWorkingDirectory(split[0]);
-                                    if (!ftpClient.Store(zArchive.Name))
-                                    {
-                                        return;
-                                    }
-                                    Dispatcher.Invoke(new Action(() => {
-                                        progressBar.Value++;
-                                    }));
-                                }
-                                else
-                                {
-                                    if (!ftpClient.Store(zArchive.Name))
-                                    {
-                                        return;
-                                    }
-                                    Dispatcher.Invoke(new Action(() => {
-                                        progressBar.Value++;
-                                    }));
-                                }
-                            }
-                        }
-                    }
-                }
-                ftpClient.Disconnect();
-                Dispatcher.Invoke(new Action(() =>
-                {
-                    txtStatus.Text = "Uploaded DB Backup";
-                }));
+                ZipFile.ExtractToDirectory(zipPath, extractPath);
+
+                FTP.UploadDirectory(extractPath, XboxMusicDirectory, FtpFolderSyncMode.Update, FtpRemoteExists.OverwriteInPlace);
+
+                Directory.Delete(extractPath, true);
+
+                SetStatus("Backup uploaded to Xbox");
             }
             catch
             {
-                Dispatcher.Invoke(new Action(() =>
-                {
-                    txtStatus.Text = "Critical Error";
-                }));
+                SetStatus("Error uploading backup");
+                MessageBox.Show("There was an error uploading the soundtrack backup.", "Backup Upload Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
-                logLines = ftpClient.ftpLogEntries;
                 Dispatcher.Invoke(new Action(() =>
                 {
                     progressBar.Value = 0;
-                    gridMain.IsEnabled = true;
                 }));
             }
-            */
+
+            FTP.Disconnect();
         }
 
-        private void mnuUploadBackupToXbox_Click(object sender, RoutedEventArgs e)
+        private async void mnuUploadBackupToXbox_Click(object sender, RoutedEventArgs e)
         {
-            /*
             OpenFileDialog ofDialog = new OpenFileDialog();
-            ofDialog.Filter = "Zip files (*.zip)|*.zip";
+            ofDialog.Title = "Choose Soundtrack Backup";
+            ofDialog.Filter = "ZIP Files (*.zip)|*.zip";
             ofDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
             if (ofDialog.ShowDialog() != true)
             {
                 return;
             }
 
             gridMain.IsEnabled = false;
-            txtStatus.Text = "Uploading Backup To FTP";
-            thrFtpControl = new Thread(new ParameterizedThreadStart(UploadBackupToFtp));
-            thrFtpControl.Start(ofDialog.FileName);
-            */
+
+            await Task.Run(() => UploadBackupToXbox(ofDialog.FileName));
+
+            gridMain.IsEnabled = true;
         }
 
         private void mnuPatchXBE_Click(object sender, RoutedEventArgs e)
