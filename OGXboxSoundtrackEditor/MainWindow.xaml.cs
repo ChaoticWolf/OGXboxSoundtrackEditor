@@ -1050,7 +1050,7 @@ namespace OGXboxSoundtrackEditor
             }
             catch
             {
-                SetStatus("Error adding track" + (TrackTotal >1 ? "s" : ""));
+                SetStatus("Error adding track" + (TrackTotal > 1 ? "s" : ""));
             }
 
             Dispatcher.Invoke(new Action(() =>
@@ -1143,6 +1143,12 @@ namespace OGXboxSoundtrackEditor
 
         private void btnAddSoundtrack_Click(object sender, RoutedEventArgs e)
         {
+            if (soundtracks.Count == 100)
+            {
+                MessageBox.Show("The maximum amount of soundtracks has been reached.", "Maximum Soundtracks", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
             TitleInput TitleInput = new TitleInput("Enter a soundtrack title.", "Soundtrack Title", 31);
             if (TitleInput.ShowDialog() != true)
             {
