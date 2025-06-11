@@ -915,6 +915,34 @@ namespace OGXboxSoundtrackEditor
             FTP.Disconnect();
         }
 
+        private bool IsValidSoundtrackBackup(string zipPath)
+        {
+            try
+            {
+                using (var zipFile = ZipFile.OpenRead(zipPath))
+                {
+                    var entries = zipFile.Entries;
+                    foreach (var entry in entries)
+                    {
+                        if (entry.Name.Equals("ST.DB"))
+                        {
+                            return true;
+                        }
+                    }
+
+                    SetStatus("No database in backup");
+                    MessageBox.Show("A soundtrack database was not found in the ZIP file you selected.", "No database found in backup", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return false;
+                }
+            }
+            catch (InvalidDataException)
+            {
+                SetStatus("Invalid ZIP");
+                MessageBox.Show("The ZIP file you selected is invalid", "Invalid ZIP", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+        }
+
         private async void mnuUploadBackupToXbox_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog ofDialog = new OpenFileDialog();
@@ -923,6 +951,11 @@ namespace OGXboxSoundtrackEditor
             ofDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
             if (ofDialog.ShowDialog() != true)
+            {
+                return;
+            }
+
+            if (!IsValidSoundtrackBackup(ofDialog.FileName))
             {
                 return;
             }
