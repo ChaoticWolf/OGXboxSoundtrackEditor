@@ -943,6 +943,12 @@ namespace OGXboxSoundtrackEditor
                 MessageBox.Show("The ZIP file you selected is invalid", "Invalid ZIP", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
+            catch
+            {
+                SetStatus("Error reading ZIP file");
+                MessageBox.Show("There was an error reading the ZIP file.", "Error Reading ZIP File", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
         }
 
         private async void mnuUploadBackupToXbox_Click(object sender, RoutedEventArgs e)
