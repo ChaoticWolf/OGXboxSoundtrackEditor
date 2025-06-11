@@ -9,8 +9,7 @@ OG Xbox Soundtrack Editor is an application to manipulate the music stored on th
 * Ability to choose bitrate for converted tracks
 * Choose which partition (E, F, or G) and drive (HDD 1 or HDD 2) music is loaded from and saved to
 * Patch games to load music from the F or G partition and from HDD 2
-* Backup music database to .ZIP file
-* Restore music to Xbox from .ZIP file
+* Backup and restore music database with a ZIP file
 * Xbox 360 backwards compatibility support
 
 ## Requirements
