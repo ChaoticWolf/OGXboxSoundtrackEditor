@@ -145,6 +145,8 @@ namespace OGXboxSoundtrackEditor
 
         private bool GetMusicWorkingDirectory()
         {
+            SetStatus("Searching for music directory...");
+
             XboxMusicDirectory = "";
             var server = FTP.SystemType;
 
