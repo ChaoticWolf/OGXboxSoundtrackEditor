@@ -818,6 +818,8 @@ namespace OGXboxSoundtrackEditor
 
         private void BackupFromXbox(string zipPath)
         {
+            string copyPath = OutputFolder + "\\music\\";
+
             if (!ConnectToXbox())
             {
                 return;
@@ -834,14 +836,10 @@ namespace OGXboxSoundtrackEditor
 
                 FTP.SetWorkingDirectory(XboxMusicDirectory);
 
-                string copyPath = OutputFolder + "\\music\\";
-
                 //TODO: Only works with XBMC and PrometheOS, get it working for other dashboards
                 FTP.DownloadDirectory(copyPath, XboxMusicDirectory, FtpFolderSyncMode.Update, FtpLocalExists.Overwrite);
 
                 ZipFile.CreateFromDirectory(copyPath, zipPath);
-
-                Directory.Delete(copyPath, true);
 
                 SetStatus("Backup created from Xbox");
             }
@@ -852,6 +850,7 @@ namespace OGXboxSoundtrackEditor
             }
 
             FTP.Disconnect();
+            Directory.Delete(copyPath, true);
         }
 
         private async void mnuBackupFromXbox_Click(object sender, RoutedEventArgs e)
@@ -875,6 +874,8 @@ namespace OGXboxSoundtrackEditor
 
         private void UploadBackupToXbox(string zipPath)
         {
+            string extractPath = OutputFolder + "\\music\\";
+
             if (!ConnectToXbox())
             {
                 return;
@@ -891,13 +892,9 @@ namespace OGXboxSoundtrackEditor
 
                 FTP.SetWorkingDirectory(XboxMusicDirectory);
 
-                string extractPath = OutputFolder + "\\music\\";
-
                 ZipFile.ExtractToDirectory(zipPath, extractPath);
 
                 FTP.UploadDirectory(extractPath, XboxMusicDirectory, FtpFolderSyncMode.Update, FtpRemoteExists.OverwriteInPlace);
-
-                Directory.Delete(extractPath, true);
 
                 SetStatus("Backup uploaded to Xbox");
             }
@@ -915,6 +912,7 @@ namespace OGXboxSoundtrackEditor
             }
 
             FTP.Disconnect();
+            Directory.Delete(extractPath, true);
         }
 
         private bool IsValidSoundtrackBackup(string zipPath)
