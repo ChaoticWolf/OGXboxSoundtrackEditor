@@ -153,14 +153,7 @@ namespace OGXboxSoundtrackEditor
             //Check for Dashlaunch or XeXMenu. Their FTP servers set working directories even if they don't exist
             if (server.Contains("DLiFTPD") || server.Contains("XeXMenu"))
             {
-                if (server.Contains("DLiFTPD"))
-                {
-                    XboxMusicDirectory = "/Hdd/Compatibility/Xbox1/TDATA/FFFE0000/MUSIC/";
-                }
-                else
-                {
-                    XboxMusicDirectory = "/Hdd1/Compatibility/Xbox1/TDATA/FFFE0000/MUSIC/";
-                }
+                XboxMusicDirectory = "/Hdd" + (!server.Contains("DLiFTPD") ? "1" : "") + "/Compatibility/Xbox1/TDATA/FFFE0000/MUSIC/";
 
                 //We'll send this in case it doesn't exist
                 FTP.CreateDirectory(XboxMusicDirectory);
