@@ -843,6 +843,11 @@ namespace OGXboxSoundtrackEditor
                     //TODO: Only works with XBMC and PrometheOS, get it working for other dashboards
                     FTP.DownloadDirectory(copyPath, XboxMusicDirectory, FtpFolderSyncMode.Update, FtpLocalExists.Overwrite);
 
+                    if (Directory.Exists(copyPath))
+                    {
+                        Directory.Delete(copyPath, true);
+                    }
+
                     ZipFile.CreateFromDirectory(copyPath, zipPath);
 
                     SetStatus("Backup created from Xbox");
@@ -860,7 +865,10 @@ namespace OGXboxSoundtrackEditor
             }
 
             FTP.Disconnect();
-            Directory.Delete(copyPath, true);
+            if (Directory.Exists(copyPath))
+            {
+                Directory.Delete(copyPath, true);
+            }
         }
 
         private async void mnuBackupFromXbox_Click(object sender, RoutedEventArgs e)
