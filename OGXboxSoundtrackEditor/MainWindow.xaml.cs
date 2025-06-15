@@ -785,6 +785,12 @@ namespace OGXboxSoundtrackEditor
                 }
 
                 SetStatus("Uploaded to Xbox");
+
+                ftpDestPaths.Clear();
+                ftpLocalPaths.Clear();
+                ftpSoundtrackIds.Clear();
+
+                SoundtracksEdited = false;
             }
             catch
             {
@@ -799,12 +805,6 @@ namespace OGXboxSoundtrackEditor
             }
 
             FTP.Disconnect();
-
-            ftpDestPaths.Clear();
-            ftpLocalPaths.Clear();
-            ftpSoundtrackIds.Clear();
-
-            SoundtracksEdited = false;
         }
 
         private async void mnuSaveToXbox_Click(object sender, RoutedEventArgs e)
