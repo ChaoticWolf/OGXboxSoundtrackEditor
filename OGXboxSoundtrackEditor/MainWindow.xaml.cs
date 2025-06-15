@@ -811,7 +811,7 @@ namespace OGXboxSoundtrackEditor
 
         private void BackupFromXbox(string zipPath)
         {
-            string copyPath = Path.GetTempPath() + "\\music\\";
+            string copyPath = Path.GetTempPath() + "music\\";
 
             if (!ConnectToXbox())
             {
@@ -839,13 +839,13 @@ namespace OGXboxSoundtrackEditor
                 }
                 else
                 {
-                    //TODO: Only works with XBMC and PrometheOS, get it working for other dashboards
-                    FTP.DownloadDirectory(copyPath, XboxMusicDirectory, FtpFolderSyncMode.Update, FtpLocalExists.Overwrite);
-
                     if (Directory.Exists(copyPath))
                     {
                         Directory.Delete(copyPath, true);
                     }
+
+                    //TODO: Only works with XBMC and PrometheOS, get it working for other dashboards
+                    FTP.DownloadDirectory(copyPath, XboxMusicDirectory, FtpFolderSyncMode.Update, FtpLocalExists.Overwrite);
 
                     ZipFile.CreateFromDirectory(copyPath, zipPath);
 
@@ -886,7 +886,7 @@ namespace OGXboxSoundtrackEditor
 
         private void UploadBackupToXbox(string zipPath)
         {
-            string extractPath = Path.GetTempPath() + "\\music\\";
+            string extractPath = Path.GetTempPath() + "music\\";
 
             if (!ConnectToXbox())
             {
