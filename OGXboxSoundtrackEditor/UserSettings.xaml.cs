@@ -12,22 +12,22 @@ namespace OGXboxSoundtrackEditor
         {
             InitializeComponent();
 
-            string OutputFolder = Properties.Settings.Default.OutputFolder;
-            string IPAddress = Properties.Settings.Default.IPAddress;
-            string Username = Properties.Settings.Default.Username;
-            string Password = Properties.Settings.Default.Password;
-            int Port = Properties.Settings.Default.Port;
-            bool ActiveMode = Properties.Settings.Default.ActiveMode;
+            string outputFolder = Properties.Settings.Default.OutputFolder;
+            string ftpIPAddress = Properties.Settings.Default.IPAddress;
+            string ftpUsername = Properties.Settings.Default.Username;
+            string ftpPassword = Properties.Settings.Default.Password;
+            int ftpPort = Properties.Settings.Default.Port;
+            bool ftpActiveMode = Properties.Settings.Default.ActiveMode;
             int bitrate = Properties.Settings.Default.bitrate;
-            string MusicPartition = Properties.Settings.Default.MusicPartition;
-            int MusicDrive = Properties.Settings.Default.MusicDrive;
+            string musicPartition = Properties.Settings.Default.MusicPartition;
+            int musicDrive = Properties.Settings.Default.MusicDrive;
 
-            txtOutputDirectory.Text = OutputFolder;
-            txtIpAddress.Text = IPAddress;
-            txtUsername.Text = Username;
-            txtPassword.Password = Password;
-            intPort.Value = Port;
-            if (ActiveMode)
+            txtOutputDirectory.Text = outputFolder;
+            txtIpAddress.Text = ftpIPAddress;
+            txtUsername.Text = ftpUsername;
+            txtPassword.Password = ftpPassword;
+            intPort.Value = ftpPort;
+            if (ftpActiveMode)
             {
                 cbActiveMode.IsChecked = true;
             }
@@ -51,23 +51,23 @@ namespace OGXboxSoundtrackEditor
             {
                 cboBitrate.SelectedIndex = 4;
             }
-            if (MusicPartition == "E")
+            if (musicPartition == "E")
             {
                 cboMusicPartition.SelectedIndex = 0;
             }
-            else if (MusicPartition == "F")
+            else if (musicPartition == "F")
             {
                 cboMusicPartition.SelectedIndex = 1;
             }
-            else if (MusicPartition == "G")
+            else if (musicPartition == "G")
             {
                 cboMusicPartition.SelectedIndex = 2;
             }
-            if (MusicDrive == 0)
+            if (musicDrive == 0)
             {
                 radioButtonHDD1.IsChecked = true;
             }
-            else if (MusicDrive == 1)
+            else if (musicDrive == 1)
             {
                 radioButtonHDD2.IsChecked = true;
             }
@@ -76,7 +76,7 @@ namespace OGXboxSoundtrackEditor
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {
             //Verify output folder
-            if (!Directory.Exists(txtOutputDirectory.Text)) {
+            if (!Directory.Exists(txtOutputDirectory.Text.Trim())) {
                 System.Windows.MessageBox.Show("Invalid output directory.", "Output Directory Invalid", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
@@ -115,7 +115,7 @@ namespace OGXboxSoundtrackEditor
                 }
             }
 
-            Properties.Settings.Default.OutputFolder = txtOutputDirectory.Text;
+            Properties.Settings.Default.OutputFolder = txtOutputDirectory.Text.Trim();
             Properties.Settings.Default.IPAddress = txtIpAddress.Text.Trim();
             Properties.Settings.Default.Username = txtUsername.Text;
             Properties.Settings.Default.Password = txtPassword.Password;

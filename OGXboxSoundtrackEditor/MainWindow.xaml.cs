@@ -29,18 +29,18 @@ namespace OGXboxSoundtrackEditor
         WindowsMediaPlayer wmp = new WindowsMediaPlayer();
 
         // saved settings variables
-        string OutputFolder;
-        string IPAddress;
-        string Username;
-        string Password;
-        int Port;
-        bool ActiveMode;
-        string MusicPartition;
-        int MusicDrive;
+        string outputFolder;
+        string ftpIPAddress;
+        string ftpUsername;
+        string ftpPassword;
+        int ftpPort;
+        bool ftpActiveMode;
+        string musicPartition;
+        int musicDrive;
         int bitrate;
 
         bool blankSoundtrackAdded;
-        bool SoundtracksEdited;
+        bool soundtracksEdited;
         string XboxMusicDirectory;
 
         List<string> ftpLocalPaths = new List<string>();
@@ -72,14 +72,14 @@ namespace OGXboxSoundtrackEditor
 
         private void LoadSettings()
         {
-            OutputFolder = Properties.Settings.Default.OutputFolder;
-            IPAddress = Properties.Settings.Default.IPAddress;
-            Username = Properties.Settings.Default.Username;
-            Password = Properties.Settings.Default.Password;
-            Port = Properties.Settings.Default.Port;
-            ActiveMode = Properties.Settings.Default.ActiveMode;
-            MusicPartition = Properties.Settings.Default.MusicPartition;
-            MusicDrive = Properties.Settings.Default.MusicDrive;
+            outputFolder = Properties.Settings.Default.OutputFolder;
+            ftpIPAddress = Properties.Settings.Default.IPAddress;
+            ftpUsername = Properties.Settings.Default.Username;
+            ftpPassword = Properties.Settings.Default.Password;
+            ftpPort = Properties.Settings.Default.Port;
+            ftpActiveMode = Properties.Settings.Default.ActiveMode;
+            musicPartition = Properties.Settings.Default.MusicPartition;
+            musicDrive = Properties.Settings.Default.MusicDrive;
             bitrate = Properties.Settings.Default.bitrate;
         }
 
@@ -93,7 +93,7 @@ namespace OGXboxSoundtrackEditor
         private bool ConnectToXbox()
         {
             //If the user hasn't set an IP, prompt to set one
-            if (string.IsNullOrEmpty(IPAddress))
+            if (string.IsNullOrEmpty(ftpIPAddress))
             {
                 bool IPSet = Dispatcher.Invoke(new Func<bool>(() =>
                 {
@@ -114,14 +114,14 @@ namespace OGXboxSoundtrackEditor
                 LoadSettings();
             }
 
-            FTP = new FtpClient(IPAddress, Username, Password, Port);
-            if (ActiveMode)
+            FTP = new FtpClient(ftpIPAddress, ftpUsername, ftpPassword, ftpPort);
+            if (ftpActiveMode)
             {
                 FTP.Config.DataConnectionType = FtpDataConnectionType.PORT;
             }
 
             //Connect to the Xbox
-            SetStatus("Connecting to Xbox " + IPAddress + "...");
+            SetStatus("Connecting to Xbox " + ftpIPAddress + "...");
 
             try
             {
@@ -162,9 +162,9 @@ namespace OGXboxSoundtrackEditor
 
             string[] XboxDrives =
             {
-                MusicPartition, //E - Used by most dashboards
-                $"HDD{MusicDrive}-{MusicPartition}", //PrometheOS
-                $"{MusicPartition}:", //E: - Used by some dashboards like Avalaunch
+                musicPartition, //E - Used by most dashboards
+                $"HDD{musicDrive}-{musicPartition}", //PrometheOS
+                $"{musicPartition}:", //E: - Used by some dashboards like Avalaunch
                 "Hdd1" //Xbox 360
             };
 
@@ -634,7 +634,7 @@ namespace OGXboxSoundtrackEditor
 
                 SetStatus("Deleted soundtracks from Xbox");
 
-                SoundtracksEdited = false;
+                soundtracksEdited = false;
             }
             catch (Exception ex)
             {
@@ -783,7 +783,7 @@ namespace OGXboxSoundtrackEditor
                 ftpLocalPaths.Clear();
                 ftpSoundtrackIds.Clear();
 
-                SoundtracksEdited = false;
+                soundtracksEdited = false;
             }
             catch
             {
@@ -1024,7 +1024,7 @@ namespace OGXboxSoundtrackEditor
             this.Close();
         }
 
-        private void AddTrackFiles(object paths, int TrackTotal)
+        private void AddTrackFiles(object paths, int trackTotal)
         {
             Soundtrack sTrack = null;
             Dispatcher.Invoke(new Action(() =>
@@ -1041,7 +1041,7 @@ namespace OGXboxSoundtrackEditor
                 progressBar.Maximum = realPaths.Length;
             }));
 
-            int CurrentTrack = 0;
+            int currentTrack = 0;
 
             try
             {
@@ -1052,38 +1052,38 @@ namespace OGXboxSoundtrackEditor
 
                     if (title.Length > 31)
                     {
-                        bool NewTitle = Dispatcher.Invoke(new Func<bool>(() =>
+                        bool newTitle = Dispatcher.Invoke(new Func<bool>(() =>
                         {
-                            TitleInput TitleInput = new TitleInput("Song name \"" + title + "\" is too long. Please enter a new one.", "Edit Song Title", 31);
-                            if (TitleInput.ShowDialog() != true)
+                            TitleInput titleInput = new TitleInput("Song name \"" + title + "\" is too long. Please enter a new one.", "Edit Song Title", 31);
+                            if (titleInput.ShowDialog() != true)
                             {
                                 return false;
                             }
 
-                            title = TitleInput.TrackTitle;
+                            title = titleInput.TrackTitle;
                             return true;
                         }));
 
-                        if (!NewTitle)
+                        if (!newTitle)
                         {
-                            TrackTotal--;
+                            trackTotal--;
                             continue;
                         }
                     }
 
-                    CurrentTrack++;
+                    currentTrack++;
                     
-                    string TrackFormat = Path.GetExtension(path).Replace(".", "").ToUpper();
+                    string trackFormat = Path.GetExtension(path).Replace(".", "").ToUpper();
 
-                    if (TrackFormat == "WMA")
+                    if (trackFormat == "WMA")
                     {
                         ftpLocalPaths.Add(path);
                     }
                     else
                     {
-                        SetStatus($"Converting {TrackFormat} track... ({CurrentTrack} of {TrackTotal})");
+                        SetStatus($"Converting {trackFormat} track... ({currentTrack} of {trackTotal})");
 
-                        string wmaOutputPath = OutputFolder + "\\" + nextSongId.ToString("X4") + ".wma";
+                        string wmaOutputPath = outputFolder + "\\" + nextSongId.ToString("X4") + ".wma";
                         using (MediaFoundationReader reader = new MediaFoundationReader(path))
                         {
                             MediaFoundationEncoder.EncodeToWma(reader, wmaOutputPath, bitrate);
@@ -1092,7 +1092,7 @@ namespace OGXboxSoundtrackEditor
                         ftpLocalPaths.Add(wmaOutputPath);
                     }
 
-                    SetStatus($"Adding {TrackFormat} track... ({CurrentTrack} of {TrackTotal})");
+                    SetStatus($"Adding {trackFormat} track... ({currentTrack} of {trackTotal})");
 
                     AddSong(soundtrackId, path, title);
                     Dispatcher.Invoke(new Action(() =>
@@ -1101,15 +1101,15 @@ namespace OGXboxSoundtrackEditor
                     }));
                 }
 
-                if (TrackTotal > 0)
+                if (trackTotal > 0)
                 {
-                    SetStatus(TrackTotal + " track" + (TrackTotal > 1 ? "s" : "") + " added");
-                    SoundtracksEdited = true;
+                    SetStatus(trackTotal + " track" + (trackTotal > 1 ? "s" : "") + " added");
+                    soundtracksEdited = true;
                 }
             }
             catch
             {
-                SetStatus("Error adding track" + (TrackTotal > 1 ? "s" : ""));
+                SetStatus("Error adding track" + (trackTotal > 1 ? "s" : ""));
             }
 
             Dispatcher.Invoke(new Action(() =>
@@ -1208,13 +1208,13 @@ namespace OGXboxSoundtrackEditor
                 return;
             }
 
-            TitleInput TitleInput = new TitleInput("Enter a soundtrack title.", "Soundtrack Title", 31);
-            if (TitleInput.ShowDialog() != true)
+            TitleInput titleInput = new TitleInput("Enter a soundtrack title.", "Soundtrack Title", 31);
+            if (titleInput.ShowDialog() != true)
             {
                 return;
             }
 
-            string title = TitleInput.TrackTitle;
+            string title = titleInput.TrackTitle;
 
             // create soundtrack
             Soundtrack sTrack = new Soundtrack();
@@ -1235,7 +1235,7 @@ namespace OGXboxSoundtrackEditor
             SetStatus("Added soundtrack " + title);
 
             blankSoundtrackAdded = true;
-            SoundtracksEdited = true;
+            soundtracksEdited = true;
         }
 
         private void btnDeleteSoundtrack_Click(object sender, RoutedEventArgs e)
@@ -1249,7 +1249,7 @@ namespace OGXboxSoundtrackEditor
                 FindNextSongId();
                 FindNextSoundtrackId();
 
-                SoundtracksEdited = true;
+                soundtracksEdited = true;
             }
         }
 
@@ -1257,20 +1257,20 @@ namespace OGXboxSoundtrackEditor
         {
             Soundtrack sTrack = (Soundtrack)listSoundtracks.SelectedItem;
 
-            TitleInput TitleInput = new TitleInput("Enter a new soundtrack title.", "Edit Soundtrack Title", 31);
-            if (TitleInput.ShowDialog() != true)
+            TitleInput titleInput = new TitleInput("Enter a new soundtrack title.", "Edit Soundtrack Title", 31);
+            if (titleInput.ShowDialog() != true)
             {
                 return;
             }
 
-            string title = TitleInput.TrackTitle;
+            string title = titleInput.TrackTitle;
 
             sTrack.name = new char[64];
             title.CopyTo(0, sTrack.name, 0, title.Length);
 
             listSoundtracks.Items.Refresh();
 
-            SoundtracksEdited = true;
+            soundtracksEdited = true;
         }
 
         private void listSoundtracks_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1309,7 +1309,7 @@ namespace OGXboxSoundtrackEditor
 
         private async void btnAddTracks_Click(object sender, RoutedEventArgs e)
         {
-            if (!Directory.Exists(OutputFolder))
+            if (!Directory.Exists(outputFolder))
             {
                 MessageBox.Show("Invalid output folder configured in Settings.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
@@ -1405,20 +1405,20 @@ namespace OGXboxSoundtrackEditor
             ReorderSongsInGroups(tempSoundtrack);
             FindNextSongId();
 
-            SoundtracksEdited = true;
+            soundtracksEdited = true;
         }
 
         private void btnRenameSong_Click(object sender, RoutedEventArgs e)
         {
             Song song = (Song)listSongs.SelectedItem;
 
-            TitleInput TitleInput = new TitleInput("Enter a new song title.", "Edit Song Title", 31);
-            if (TitleInput.ShowDialog() != true)
+            TitleInput titleInput = new TitleInput("Enter a new song title.", "Edit Song Title", 31);
+            if (titleInput.ShowDialog() != true)
             {
                 return;
             }
 
-            string title = TitleInput.TrackTitle;
+            string title = titleInput.TrackTitle;
 
             foreach (Soundtrack sTrack in soundtracks)
             {
@@ -1441,7 +1441,7 @@ namespace OGXboxSoundtrackEditor
 
             listSongs.Items.Refresh();
 
-            SoundtracksEdited = true;
+            soundtracksEdited = true;
         }
 
         private void listSongs_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1465,7 +1465,7 @@ namespace OGXboxSoundtrackEditor
 
         private async void Window_Closing(object sender, CancelEventArgs e)
         {
-            if (SoundtracksEdited)
+            if (soundtracksEdited)
             {
                 MessageBoxResult DialogResult = MessageBox.Show("Do you want to upload your changes to your Xbox?", "Upload Changes?", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
                 if (DialogResult == MessageBoxResult.Yes)
@@ -1477,7 +1477,7 @@ namespace OGXboxSoundtrackEditor
                     await Task.Run(() => UploadDbToXbox());
 
                     //If this is still true then there was an error on upload, so we'll cancel closing
-                    if (SoundtracksEdited)
+                    if (soundtracksEdited)
                     {
                         gridMain.IsEnabled = true;
                     } 
