@@ -20,10 +20,10 @@
         <Menu Grid.ColumnSpan="2">
             <MenuItem Header="_File">
                 <MenuItem Header="_New" Click="mnuNew_Click" />
-                <MenuItem x:Name="mnuOpenDbFromXbox" Header="Connect to Xbox" Click="mnuOpenDbFromXbox_Click" />
-                <MenuItem x:Name="mnuSaveToXbox" Header="Save to Xbox" Click="mnuSaveToXbox_Click" IsEnabled="false" />
-                <MenuItem Header="Backup from Xbox" Click="mnuBackupFromXbox_Click" />
-                <MenuItem Header="Upload Backup to Xbox" Click="mnuUploadBackupToXbox_Click" />
+                <MenuItem x:Name="mnuOpenDbFromXbox" Header="Connect" Click="mnuOpenDbFromXbox_Click" />
+                <MenuItem x:Name="mnuSaveToXbox" Header="Save" Click="mnuSaveToXbox_Click" IsEnabled="false" />
+                <MenuItem Header="Create Backup" Click="mnuBackupFromXbox_Click" />
+                <MenuItem Header="Upload Backup" Click="mnuUploadBackupToXbox_Click" />
                 <MenuItem x:Name="mnuPatchXBE" Header="Patch XBE" Click="mnuPatchXBE_Click" />
                 <Separator />
                 <MenuItem Header="_Exit" Click="mnuExit_Click" />
