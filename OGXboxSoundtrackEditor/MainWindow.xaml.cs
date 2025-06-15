@@ -818,7 +818,7 @@ namespace OGXboxSoundtrackEditor
 
         private void BackupFromXbox(string zipPath)
         {
-            string copyPath = OutputFolder + "\\music\\";
+            string copyPath = Path.GetTempPath() + "\\music\\";
 
             if (!ConnectToXbox())
             {
@@ -892,7 +892,7 @@ namespace OGXboxSoundtrackEditor
 
         private void UploadBackupToXbox(string zipPath)
         {
-            string extractPath = OutputFolder + "\\music\\";
+            string extractPath = Path.GetTempPath() + "\\music\\";
 
             if (!ConnectToXbox())
             {
@@ -935,7 +935,10 @@ namespace OGXboxSoundtrackEditor
             }
 
             FTP.Disconnect();
-            Directory.Delete(extractPath, true);
+            if (Directory.Exists(extractPath))
+            {
+                Directory.Delete(extractPath, true);
+            }
         }
 
         private bool IsValidSoundtrackBackup(string zipPath)
