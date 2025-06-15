@@ -625,15 +625,15 @@ namespace OGXboxSoundtrackEditor
                 return;
             }
 
+            if (!GetMusicWorkingDirectory())
+            {
+                return;
+            }
+
             SetStatus("Deleting soundtracks from Xbox...");
 
             try
             {
-                if (!GetMusicWorkingDirectory())
-                {
-                    return;
-                }
-
                 FTP.SetWorkingDirectory(XboxMusicDirectory);
 
                 //TODO: Using EmptyDirectory and DeleteDirectory only seems to work on XBMC and PrometheOS, get it working for other dashboards
@@ -678,15 +678,15 @@ namespace OGXboxSoundtrackEditor
                 return;
             }
 
+            if (!GetMusicWorkingDirectory())
+            {
+                return;
+            }
+
             SetStatus("Downloading soundtrack database...");
 
             try
             {
-                if (!GetMusicWorkingDirectory())
-                {
-                    return;
-                }
-
                 FTP.SetWorkingDirectory(XboxMusicDirectory);
 
                 //Some FTP servers don't support the NLST command sent by FileExists
@@ -752,15 +752,15 @@ namespace OGXboxSoundtrackEditor
                 return;
             }
 
+            if (!GetMusicWorkingDirectory())
+            {
+                return;
+            }
+
             SetStatus("Uploading to Xbox...");
 
             try
             {
-                if (!GetMusicWorkingDirectory())
-                {
-                    return;
-                }
-
                 FTP.SetWorkingDirectory(XboxMusicDirectory);
 
                 FTP.UploadBytes(GetDbBytes(), "ST.DB", FtpRemoteExists.OverwriteInPlace);
@@ -825,14 +825,15 @@ namespace OGXboxSoundtrackEditor
                 return;
             }
 
+            if (!GetMusicWorkingDirectory())
+            {
+                return;
+            }
+
             SetStatus("Backing up from Xbox...");
 
             try
             {
-                if (!GetMusicWorkingDirectory())
-                {
-                    return;
-                }
 
                 FTP.SetWorkingDirectory(XboxMusicDirectory);
 
@@ -899,15 +900,15 @@ namespace OGXboxSoundtrackEditor
                 return;
             }
 
+            if (!GetMusicWorkingDirectory())
+            {
+                return;
+            }
+
             SetStatus("Uploading backup to Xbox...");
 
             try
             {
-                if (!GetMusicWorkingDirectory())
-                {
-                    return;
-                }
-
                 FTP.SetWorkingDirectory(XboxMusicDirectory);
 
                 if (Directory.Exists(extractPath))
