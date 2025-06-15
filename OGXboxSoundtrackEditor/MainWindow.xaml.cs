@@ -892,6 +892,11 @@ namespace OGXboxSoundtrackEditor
 
                 FTP.SetWorkingDirectory(XboxMusicDirectory);
 
+                if (Directory.Exists(extractPath))
+                {
+                    Directory.Delete(extractPath, true);
+                }
+
                 ZipFile.ExtractToDirectory(zipPath, extractPath);
 
                 FTP.UploadDirectory(extractPath, XboxMusicDirectory, FtpFolderSyncMode.Update, FtpRemoteExists.OverwriteInPlace);
