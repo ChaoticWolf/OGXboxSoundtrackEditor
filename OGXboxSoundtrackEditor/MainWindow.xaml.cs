@@ -836,12 +836,22 @@ namespace OGXboxSoundtrackEditor
 
                 FTP.SetWorkingDirectory(XboxMusicDirectory);
 
-                //TODO: Only works with XBMC and PrometheOS, get it working for other dashboards
-                FTP.DownloadDirectory(copyPath, XboxMusicDirectory, FtpFolderSyncMode.Update, FtpLocalExists.Overwrite);
+                //Some FTP servers don't support the NLST command sent by FileExists
+                var files = FTP.GetListing(XboxMusicDirectory);
+                if (files.All(file => file.Name == "ST.DB"))
+                {
+                    //TODO: Only works with XBMC and PrometheOS, get it working for other dashboards
+                    FTP.DownloadDirectory(copyPath, XboxMusicDirectory, FtpFolderSyncMode.Update, FtpLocalExists.Overwrite);
 
-                ZipFile.CreateFromDirectory(copyPath, zipPath);
+                    ZipFile.CreateFromDirectory(copyPath, zipPath);
 
-                SetStatus("Backup created from Xbox");
+                    SetStatus("Backup created from Xbox");
+                }
+                else
+                {
+                    SetStatus("No database to backup");
+                    MessageBox.Show("A soundtrack database was not found on the Xbox to backup.", "No Database", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
             }
             catch
             {
