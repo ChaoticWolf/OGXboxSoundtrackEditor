@@ -38,6 +38,7 @@ namespace OGXboxSoundtrackEditor
         string musicPartition;
         int musicDrive;
         int bitrate;
+        bool turnOffAfterCopy;
 
         bool blankSoundtrackAdded;
         bool soundtracksEdited;
@@ -81,6 +82,7 @@ namespace OGXboxSoundtrackEditor
             musicPartition = Properties.Settings.Default.MusicPartition;
             musicDrive = Properties.Settings.Default.MusicDrive;
             bitrate = Properties.Settings.Default.bitrate;
+            turnOffAfterCopy = Properties.Settings.Default.TurnOffAfterCopy;
         }
 
         private void SetStatus(string text)
@@ -138,7 +140,7 @@ namespace OGXboxSoundtrackEditor
                 SetStatus("Could not connect to Xbox");
                 MessageBox.Show("Could not connect to the Xbox.\n" + ex.Message, "Connection Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            
+
             FTP.Disconnect();
             return false;
         }
@@ -659,7 +661,7 @@ namespace OGXboxSoundtrackEditor
             gridMain.IsEnabled = false;
 
             await Task.Run(() => DeleteTracksFromXbox());
-            
+
             gridMain.IsEnabled = true;
             mnuSaveToXbox.IsEnabled = true;
         }
@@ -777,6 +779,11 @@ namespace OGXboxSoundtrackEditor
                     }));
                 }
 
+                if (turnOffAfterCopy)
+                {
+                    FTP.Execute("SHUTDOWN");
+                }
+
                 SetStatus("Uploaded to Xbox");
 
                 ftpDestPaths.Clear();
@@ -827,7 +834,6 @@ namespace OGXboxSoundtrackEditor
 
             try
             {
-
                 FTP.SetWorkingDirectory(XboxMusicDirectory);
 
                 //Some FTP servers don't support the NLST command sent by FileExists
@@ -1072,7 +1078,7 @@ namespace OGXboxSoundtrackEditor
                     }
 
                     currentTrack++;
-                    
+
                     string trackFormat = Path.GetExtension(path).Replace(".", "").ToUpper();
 
                     if (trackFormat == "WMA")
@@ -1141,13 +1147,14 @@ namespace OGXboxSoundtrackEditor
                                 soundtracks[b].numSongs++;
                                 Dispatcher.Invoke(new Action(() =>
                                 {
-                                    soundtracks[b].allSongs.Add(new Song { 
+                                    soundtracks[b].allSongs.Add(new Song
+                                    {
                                         isRemote = false,
                                         Name = new string(songTitle).Trim(),
                                         TimeMs = songMs,
                                         songGroupId = soundtracks[b].songGroups[i].id,
                                         soundtrackId = soundtracks[b].id,
-                                        id = nextSongId 
+                                        id = nextSongId
                                     });
                                 }));
 
@@ -1174,13 +1181,14 @@ namespace OGXboxSoundtrackEditor
                     soundtracks[b].numSongs++;
                     Dispatcher.Invoke(new Action(() =>
                     {
-                        soundtracks[b].allSongs.Add(new Song {
+                        soundtracks[b].allSongs.Add(new Song
+                        {
                             isRemote = false,
                             Name = new string(songTitle).Trim(),
                             TimeMs = songMs,
                             songGroupId = sGroup.id,
                             soundtrackId = soundtracks[b].id,
-                            id = nextSongId 
+                            id = nextSongId
                         });
                     }));
                     soundtracks[b].CalculateTotalTimeMs();
@@ -1317,7 +1325,7 @@ namespace OGXboxSoundtrackEditor
 
             OpenFileDialog oDialog = new OpenFileDialog();
             oDialog.Title = "Choose track files to add";
-            oDialog.Filter = "Track Files|*.wma; *.mp3; *.wav; *.flac; *.m4a|" + 
+            oDialog.Filter = "Track Files|*.wma; *.mp3; *.wav; *.flac; *.m4a|" +
                              "WMA Files (*.wma)|*.wma|" +
                              "MP3 Files (*.mp3)|*.mp3|" +
                              "WAV Files (*.wav)|*.wav|" +
@@ -1480,12 +1488,12 @@ namespace OGXboxSoundtrackEditor
                     if (soundtracksEdited)
                     {
                         gridMain.IsEnabled = true;
-                    } 
+                    }
                     else
                     {
                         this.Close();
                     }
-                } 
+                }
                 else if (DialogResult == MessageBoxResult.Cancel)
                 {
                     e.Cancel = true;

@@ -21,6 +21,7 @@ namespace OGXboxSoundtrackEditor
             int bitrate = Properties.Settings.Default.bitrate;
             string musicPartition = Properties.Settings.Default.MusicPartition;
             int musicDrive = Properties.Settings.Default.MusicDrive;
+            bool turnOffAfterCopy = Properties.Settings.Default.TurnOffAfterCopy;
 
             txtOutputDirectory.Text = outputFolder;
             txtIpAddress.Text = ftpIPAddress;
@@ -71,16 +72,21 @@ namespace OGXboxSoundtrackEditor
             {
                 radioButtonHDD2.IsChecked = true;
             }
+            if (turnOffAfterCopy)
+            {
+                cbTurnOffAfterCopy.IsChecked = true;
+            }
         }
 
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {
             //Verify output folder
-            if (!Directory.Exists(txtOutputDirectory.Text.Trim())) {
+            if (!Directory.Exists(txtOutputDirectory.Text.Trim()))
+            {
                 System.Windows.MessageBox.Show("Invalid output directory.", "Output Directory Invalid", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            
+
             //Verify IP
             if (!Regex.IsMatch(txtIpAddress.Text.Trim(), "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"))
             {
@@ -113,6 +119,11 @@ namespace OGXboxSoundtrackEditor
                 {
                     return;
                 }
+            }
+
+            if (cbTurnOffAfterCopy.IsChecked == true && Properties.Settings.Default.TurnOffAfterCopy == false)
+            {
+                System.Windows.MessageBox.Show("You have chosen to turn off your Xbox once soundtracks are finished copying. This feature does not work with every dashboard.", "Turn Off After Copy", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             Properties.Settings.Default.OutputFolder = txtOutputDirectory.Text.Trim();
@@ -163,14 +174,22 @@ namespace OGXboxSoundtrackEditor
             if (radioButtonHDD1.IsChecked == true)
             {
                 Properties.Settings.Default.MusicDrive = 0;
-            } 
+            }
             else if (radioButtonHDD2.IsChecked == true)
             {
                 Properties.Settings.Default.MusicDrive = 1;
             }
+            if (cbTurnOffAfterCopy.IsChecked == true)
+            {
+                Properties.Settings.Default.TurnOffAfterCopy = true;
+            }
+            else
+            {
+                Properties.Settings.Default.TurnOffAfterCopy = false;
+            }
 
             Properties.Settings.Default.Save();
-            
+
             DialogResult = true;
         }
 

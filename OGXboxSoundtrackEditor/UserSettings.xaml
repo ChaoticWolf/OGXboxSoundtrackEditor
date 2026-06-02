@@ -49,6 +49,7 @@
         <Label Grid.Row="5" Margin="10,10,0,0" Content="Port:" HorizontalAlignment="Right" />
         <cntrl:NumericUpDown Grid.Row="5" x:Name="intPort" Grid.Column="1" Margin="10,10,220,0" MinValue="1" MaxValue="65535" IsReadOnly="False" IsMouseDragEnabled="False" IsUpdateValueWhenLostFocus="True" />
         <CheckBox x:Name="cbActiveMode" Grid.Column="1" Content="Active Mode" HorizontalAlignment="Center" Margin="0,15,0,0" Grid.Row="5" VerticalAlignment="Top"/>
+        <CheckBox x:Name="cbTurnOffAfterCopy" Grid.Column="1" Content="Turn off Xbox once copy is complete" HorizontalAlignment="Center" Margin="0,15,75,0" Grid.Row="6" VerticalAlignment="Top"/>
         <Button x:Name="btnBrowse" Grid.Column="2" Padding="5" Margin="10,10,10,0" Content="Browse" Click="btnBrowse_Click" />
         <WrapPanel Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Right">
             <Button x:Name="btnOK" Padding="5" Margin="10,10,10,10" Content="OK" IsDefault="True" Click="btnOK_Click" IsEnabled="False"/>
